@@ -5,15 +5,15 @@ import FilmsStatisticView from './view/films-statistic-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import {render} from './render.js';
 
-const siteHeaderElement = document.querySelector('.header');
-const siteMainElement = document.querySelector('.main');
-const siteFooterElement = document.querySelector('.footer');
-const filmsPresenter = new FilmsPresenter({filmsContainer: siteMainElement});
+const headerElement = document.querySelector('.header');
+const mainElement = document.querySelector('.main');
+const footerElement = document.querySelector('.footer');
+const filmsPresenter = new FilmsPresenter({filmsContainer: mainElement});
 
-render(new UserTitleView(), siteHeaderElement);
-render(new NavigationView(), siteMainElement);
-render(new SortingView(), siteMainElement);
+render(new UserTitleView(), headerElement);
+render(new NavigationView(), mainElement);
+render(new SortingView(), mainElement);
 
 filmsPresenter.init();
 
-render(new FilmsStatisticView(), siteFooterElement);
+render(new FilmsStatisticView(), footerElement);
