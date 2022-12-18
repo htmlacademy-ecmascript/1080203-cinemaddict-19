@@ -6,7 +6,7 @@ import FilmsListTopRatedView from '../view/films-list-top-rated-view.js';
 import FilmsListTopCommentedView from '../view/films-list-top-commented-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
-import {render} from '../render.js';
+import { render } from '../render.js';
 
 function getCommentsByIds(comments, ids) {
   const filmComments = [];
@@ -51,7 +51,7 @@ export default class FilmsPresenter {
     render(this.filmsListComponent, this.filmsComponent.getElement());
     render(this.filmsListContainerComponent, this.filmsListComponent.getElement());
     for (let i = 0; i < 5; i++) {
-      render(new FilmCardView({film: this.films[i]}), this.filmsListContainerComponent.getElement());
+      render(new FilmCardView({ film: this.films[i] }), this.filmsListContainerComponent.getElement());
     }
 
     render(new FilmsListShowMoreBtnView(), this.filmsListComponent.getElement());
@@ -59,13 +59,13 @@ export default class FilmsPresenter {
     render(this.filmsListTopRatedComponent, this.filmsComponent.getElement());
     render(this.filmsListTopRatedContainerComponent, this.filmsListTopRatedComponent.getElement());
     for (let i = 0; i < 2; i++) {
-      render(new FilmCardView({film: this.films[i]}), this.filmsListTopRatedContainerComponent.getElement());
+      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopRatedContainerComponent.getElement());
     }
 
     render(this.filmsListTopCommentedComponent, this.filmsComponent.getElement());
     render(this.filmsListTopCommentedContainerComponent, this.filmsListTopCommentedComponent.getElement());
     for (let i = 0; i < 2; i++) {
-      render(new FilmCardView({film: this.films[i]}), this.filmsListTopCommentedContainerComponent.getElement());
+      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopCommentedContainerComponent.getElement());
     }
   }
 }

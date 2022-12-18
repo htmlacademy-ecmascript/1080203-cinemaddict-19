@@ -5,7 +5,7 @@ import FilmsStatisticView from './view/films-statistic-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
-import {render} from './render.js';
+import { render } from './render.js';
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');

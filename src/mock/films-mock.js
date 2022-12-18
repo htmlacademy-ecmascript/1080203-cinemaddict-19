@@ -1,4 +1,4 @@
-import {getRandomArrayElement} from '../utils';
+import { getRandomArrayElement } from '../utils';
 
 const filmsMock = [
   {
@@ -331,4 +331,4 @@ function getRandomFilm() {
   return getRandomArrayElement(filmsMock);
 }
 
-export {getRandomFilm};
+export { getRandomFilm };

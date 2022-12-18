@@ -253,4 +253,4 @@ const commentsMock = [
   }
 ];
 
-export {commentsMock};
+export { commentsMock };
