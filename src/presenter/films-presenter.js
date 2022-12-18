@@ -8,16 +8,6 @@ import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import {render} from '../render.js';
 
-function getFilmDetailsById(films, filmId) {
-  let filmDetails;
-  films.forEach((film) => {
-    if (film.id === Number(filmId)) {
-      filmDetails = film;
-    }
-  });
-  return filmDetails;
-}
-
 function getCommentsByIds(comments, ids) {
   const filmComments = [];
   comments.forEach((comment) => {
@@ -44,14 +34,13 @@ export default class FilmsPresenter {
     this.filmsModel = filmsModel;
     this.commentsModel = commentsModel;
 
-    this.filmsListContainerComponent.getElement().addEventListener('click', (evt) => {
-      if (evt.target.nodeName !== 'BUTTON') {
-        const filmDetails = getFilmDetailsById(this.filmsModel.films, evt.target.parentElement.dataset.filmId);
-        const filmComments = getCommentsByIds(this.commentsModel.getComments(), filmDetails.comments);
-
-        render(new FilmDetailsPopupView({filmDetails, filmComments}), this.pageBody);
-      }
-    });
+    render(
+      new FilmDetailsPopupView({
+        filmDetails: this.filmsModel.films[0],
+        filmComments: getCommentsByIds(this.commentsModel.comments, this.filmsModel.films[0].comments)
+      }),
+      this.pageBody
+    );
   }
 
   init() {
