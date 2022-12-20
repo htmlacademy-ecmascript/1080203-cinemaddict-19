@@ -23,7 +23,7 @@ function humanizeDate(date, format, fromNow) {
 function convertMinutesToHoursAndMinutes(minutes) {
   dayjs.extend(duration);
 
-  const dayjsDurationFormat = (minutes >= 60) ? DAYJS_DURATION_FORMAT.FULL : DAYJS_DURATION_FORMAT.SHORT;
+  const dayjsDurationFormat = (minutes >= 60) ? DAYJS_DURATION_FORMAT.full : DAYJS_DURATION_FORMAT.short;
 
   return dayjs.duration(minutes, 'minutes').format(dayjsDurationFormat);
 }

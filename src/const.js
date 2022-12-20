@@ -3,8 +3,8 @@ const DATE_FORMAT_FULL = 'DD MMMM YYYY';
 const COMMENT_FORMS = ['comment', 'comments'];
 const FILMS_COUNT = 5;
 const DAYJS_DURATION_FORMAT = {
-  SHORT: 'm[m]',
-  FULL: 'H[h] m[m]'
+  short: 'm[m]',
+  full: 'H[h] m[m]'
 };
 
 export {
