@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
+import { DAYJS_DURATION_FORMAT } from './const';
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -19,9 +21,11 @@ function humanizeDate(date, format, fromNow) {
 }
 
 function convertMinutesToHoursAndMinutes(minutes) {
-  const newHours = Math.trunc(minutes / 60);
-  const newMinutes = minutes % 60;
-  return (newHours !== 0) ? `${newHours}ч ${newMinutes}мин` : `${newMinutes}мин`;
+  dayjs.extend(duration);
+
+  const dayjsDurationFormat = (minutes >= 60) ? DAYJS_DURATION_FORMAT.FULL : DAYJS_DURATION_FORMAT.SHORT;
+
+  return dayjs.duration(minutes, 'minutes').format(dayjsDurationFormat);
 }
 
 function transformFirstSymbolToUpperCase(word) {
