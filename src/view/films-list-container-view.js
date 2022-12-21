@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 
 function createFilmsListContainerTemplate() {
   return '<div class="films-list__container"></div>';
