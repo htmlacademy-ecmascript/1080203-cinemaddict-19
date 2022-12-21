@@ -33,14 +33,6 @@ export default class FilmsPresenter {
     this.filmsContainer = filmsContainer;
     this.filmsModel = filmsModel;
     this.commentsModel = commentsModel;
-
-    render(
-      new FilmDetailsPopupView({
-        filmDetails: this.filmsModel.films[0],
-        filmComments: getCommentsByIds(this.commentsModel.comments, this.filmsModel.films[0].comments)
-      }),
-      this.pageBody
-    );
   }
 
   init() {
@@ -48,24 +40,53 @@ export default class FilmsPresenter {
 
     render(this.filmsComponent, this.filmsContainer);
 
-    render(this.filmsListComponent, this.filmsComponent.getElement());
-    render(this.filmsListContainerComponent, this.filmsListComponent.getElement());
+    render(this.filmsListComponent, this.filmsComponent.element);
+    render(this.filmsListContainerComponent, this.filmsListComponent.element);
     for (let i = 0; i < 5; i++) {
-      render(new FilmCardView({ film: this.films[i] }), this.filmsListContainerComponent.getElement());
+      const filmCard = new FilmCardView({ film: this.films[i] });
+      const filmDetailsPopup = new FilmDetailsPopupView({
+        filmDetails: this.films[i],
+        filmComments: getCommentsByIds(this.commentsModel.comments, this.films[i].comments)
+      });
+      const escapeKeyDownHandler = (evt) => {
+        if (evt.key === 'Escape' || evt.key === 'Esc') {
+          evt.preventDefault();
+          this.pageBody.removeChild(filmDetailsPopup.element);
+          this.pageBody.classList.remove('hide-overflow');
+          document.removeEventListener('keydown', escapeKeyDownHandler);
+        }
+      };
+
+      render(filmCard, this.filmsListContainerComponent.element);
+
+      filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
+        evt.preventDefault();
+
+        render(filmDetailsPopup, this.pageBody);
+
+        filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+          this.pageBody.removeChild(filmDetailsPopup.element);
+          this.pageBody.classList.remove('hide-overflow');
+          document.removeEventListener('keydown', escapeKeyDownHandler);
+        });
+
+        this.pageBody.classList.add('hide-overflow');
+        document.addEventListener('keydown', escapeKeyDownHandler);
+      });
     }
 
-    render(new FilmsListShowMoreBtnView(), this.filmsListComponent.getElement());
+    render(new FilmsListShowMoreBtnView(), this.filmsListComponent.element);
 
-    render(this.filmsListTopRatedComponent, this.filmsComponent.getElement());
-    render(this.filmsListTopRatedContainerComponent, this.filmsListTopRatedComponent.getElement());
+    render(this.filmsListTopRatedComponent, this.filmsComponent.element);
+    render(this.filmsListTopRatedContainerComponent, this.filmsListTopRatedComponent.element);
     for (let i = 0; i < 2; i++) {
-      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopRatedContainerComponent.getElement());
+      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopRatedContainerComponent.element);
     }
 
-    render(this.filmsListTopCommentedComponent, this.filmsComponent.getElement());
-    render(this.filmsListTopCommentedContainerComponent, this.filmsListTopCommentedComponent.getElement());
+    render(this.filmsListTopCommentedComponent, this.filmsComponent.element);
+    render(this.filmsListTopCommentedContainerComponent, this.filmsListTopCommentedComponent.element);
     for (let i = 0; i < 2; i++) {
-      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopCommentedContainerComponent.getElement());
+      render(new FilmCardView({ film: this.films[i] }), this.filmsListTopCommentedContainerComponent.element);
     }
   }
 }
