@@ -38,36 +38,40 @@ export default class FilmsPresenter {
   init() {
     this.films = [...this.filmsModel.getFilms()];
 
+    function removeFilmDetailsPopup(parentElement, childElement, handler) {
+      parentElement.removeChild(childElement);
+      parentElement.classList.remove('hide-overflow');
+      document.removeEventListener('keydown', handler);
+    }
+
     render(this.filmsComponent, this.filmsContainer);
 
     render(this.filmsListComponent, this.filmsComponent.element);
     render(this.filmsListContainerComponent, this.filmsListComponent.element);
     for (let i = 0; i < 5; i++) {
       const filmCard = new FilmCardView({ film: this.films[i] });
-      const filmDetailsPopup = new FilmDetailsPopupView({
-        filmDetails: this.films[i],
-        filmComments: getCommentsByIds(this.commentsModel.comments, this.films[i].comments)
-      });
-      const escapeKeyDownHandler = (evt) => {
-        if (evt.key === 'Escape' || evt.key === 'Esc') {
-          evt.preventDefault();
-          this.pageBody.removeChild(filmDetailsPopup.element);
-          this.pageBody.classList.remove('hide-overflow');
-          document.removeEventListener('keydown', escapeKeyDownHandler);
-        }
-      };
 
       render(filmCard, this.filmsListContainerComponent.element);
 
       filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
         evt.preventDefault();
 
+        const filmDetailsPopup = new FilmDetailsPopupView({
+          filmDetails: this.films[i],
+          filmComments: getCommentsByIds(this.commentsModel.comments, this.films[i].comments)
+        });
+
+        const escapeKeyDownHandler = (e) => {
+          if (e.key === 'Escape' || e.key === 'Esc') {
+            evt.preventDefault();
+            removeFilmDetailsPopup(this.pageBody, filmDetailsPopup.element, escapeKeyDownHandler);
+          }
+        };
+
         render(filmDetailsPopup, this.pageBody);
 
         filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
-          this.pageBody.removeChild(filmDetailsPopup.element);
-          this.pageBody.classList.remove('hide-overflow');
-          document.removeEventListener('keydown', escapeKeyDownHandler);
+          removeFilmDetailsPopup(this.pageBody, filmDetailsPopup.element, escapeKeyDownHandler);
         });
 
         this.pageBody.classList.add('hide-overflow');
