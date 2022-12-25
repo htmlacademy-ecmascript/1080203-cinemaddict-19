@@ -48,7 +48,6 @@ export default class FilmCardView {
   get element() {
     if (!this.#element) {
       this.#element = createElement(this.template);
-      this.#element.querySelector('.film-card__link').dataset.filmId = this.#film.id; // Нужно свойство или нет?
     }
 
     return this.#element;

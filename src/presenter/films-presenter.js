@@ -71,21 +71,17 @@ export default class FilmsPresenter {
           filmComments: this.#getCommentsByIds(this.#commentsModel.comments, films[i].comments)
         });
 
-        const escapeKeyDownHandler = (e) => {
-          if (e.key === 'Escape' || e.key === 'Esc') {
-            evt.preventDefault();
-            this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, escapeKeyDownHandler);
-          }
+        const filmDetailsPopupHandler = (e) => {
+          e.preventDefault();
+          this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, filmDetailsPopupHandler);
         };
 
         render(filmDetailsPopup, this.#pageBody);
 
-        filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
-          this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, escapeKeyDownHandler);
-        });
+        filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', filmDetailsPopupHandler);
 
         this.#pageBody.classList.add('hide-overflow');
-        document.addEventListener('keydown', escapeKeyDownHandler);
+        document.addEventListener('keydown', filmDetailsPopupHandler);
       });
     }
   }
@@ -105,7 +101,7 @@ export default class FilmsPresenter {
   };
 
   init() {
-    if (this.#films.length > 0) {
+    if (this.#films.length) {
       render(new SortingView(), this.#mainElement);
 
       render(this.#filmsComponent, this.#filmsContainer);
