@@ -60,21 +60,24 @@ export default class FilmsPresenter {
   #renderFilmCards(films, filmsContainer, cardsCount) {
     for (let i = 0; i < Math.min(films.length, cardsCount); i++) {
       const filmCard = new FilmCardView({ film: films[i] });
+      const filmDetailsPopup = new FilmDetailsPopupView({
+        filmDetails: films[i],
+        filmComments: this.#getCommentsByIds(this.#commentsModel.comments, films[i].comments)
+      });
+
+      const filmDetailsPopupHandler = (e) => {
+        e.preventDefault();
+        this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, filmDetailsPopupHandler);
+      };
 
       render(filmCard, filmsContainer);
 
       filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
         evt.preventDefault();
 
-        const filmDetailsPopup = new FilmDetailsPopupView({
-          filmDetails: films[i],
-          filmComments: this.#getCommentsByIds(this.#commentsModel.comments, films[i].comments)
-        });
-
-        const filmDetailsPopupHandler = (e) => {
-          e.preventDefault();
-          this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, filmDetailsPopupHandler);
-        };
+        if (this.#pageBody.querySelector(`.${filmDetailsPopup.element.className}`)) {
+          this.#pageBody.removeChild(filmDetailsPopup.element); // Здесь не работает
+        }
 
         render(filmDetailsPopup, this.#pageBody);
 
