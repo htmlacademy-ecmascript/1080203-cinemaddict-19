@@ -41,9 +41,11 @@ export default class FilmsPresenter {
   }
 
   #removeFilmDetailsPopupAndHandler(parentElement, childElement, handler) {
-    parentElement.removeChild(childElement);
-    parentElement.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', handler);
+    if (parentElement.querySelector(`.${childElement.className}`)) {
+      parentElement.removeChild(this.#pageBody.querySelector(`.${childElement.className}`));
+      parentElement.classList.remove('hide-overflow');
+      document.removeEventListener('keydown', handler);
+    }
   }
 
   #getCommentsByIds(comments, ids) {
@@ -75,9 +77,7 @@ export default class FilmsPresenter {
       filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
         evt.preventDefault();
 
-        if (this.#pageBody.querySelector(`.${filmDetailsPopup.element.className}`)) {
-          this.#pageBody.removeChild(filmDetailsPopup.element); // Здесь не работает
-        }
+        this.#removeFilmDetailsPopupAndHandler(this.#pageBody, filmDetailsPopup.element, filmDetailsPopupHandler);
 
         render(filmDetailsPopup, this.#pageBody);
 
