@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
-import { DAYJS_DURATION_FORMAT } from './const';
+import { DAYJS_DURATION_FORMAT, ESCAPE_KEYCODE } from './const';
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -62,6 +62,10 @@ function getSingularOrPluralForm(formsArray, itemsQuantity) {
   return formsArray[formIndex];
 }
 
+function isKeydownNotEscapeKey(evt) {
+  return evt.type === 'keydown' && evt.keyCode !== ESCAPE_KEYCODE;
+}
+
 export {
   getRandomArrayElement,
   humanizeDate,
@@ -69,5 +73,6 @@ export {
   transformFirstSymbolToUpperCase,
   getStringFromArray,
   limitTextLength,
-  getSingularOrPluralForm
+  getSingularOrPluralForm,
+  isKeydownNotEscapeKey
 };
