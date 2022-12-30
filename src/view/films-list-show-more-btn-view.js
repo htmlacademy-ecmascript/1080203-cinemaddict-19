@@ -1,7 +1,7 @@
 import { createElement } from '../render.js';
 
 function createFilmsListShowMoreBtnTemplate() {
-  return '<button class="films-list__show-more">Show more</button>';
+  return '<button class="films-list__show-more">Show more films</button>';
 }
 
 export default class FilmsListShowMoreBtnView {
