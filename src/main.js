@@ -1,6 +1,5 @@
 import UserTitleView from './view/user-title-view.js';
 import NavigationView from './view/navigation-view.js';
-import SortingView from './view/sorting-view.js';
 import FilmsStatisticView from './view/films-statistic-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilmsModel from './model/films-model.js';
@@ -20,7 +19,6 @@ const filmsPresenter = new FilmsPresenter({
 
 render(new UserTitleView(), headerElement);
 render(new NavigationView(), mainElement);
-render(new SortingView(), mainElement);
 
 filmsPresenter.init();
 

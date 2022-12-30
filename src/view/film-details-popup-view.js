@@ -190,24 +190,28 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
 }
 
 export default class FilmDetailsPopupView {
+  #filmDetails = null;
+  #filmComments = null;
+  #element = null;
+
   constructor({ filmDetails, filmComments }) {
-    this.filmDetails = filmDetails;
-    this.filmComments = filmComments;
+    this.#filmDetails = filmDetails;
+    this.#filmComments = filmComments;
   }
 
-  getTemplate() {
-    return createFilmDetailsPopupTemplate(this.filmDetails, this.filmComments);
+  get template() {
+    return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
