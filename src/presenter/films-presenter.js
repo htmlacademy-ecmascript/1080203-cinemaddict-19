@@ -61,19 +61,10 @@ export default class FilmsPresenter {
       return;
     }
 
-    // Не понимаю, как работаетбез if, поведение следующее:
-    // Первый клик по карточке фильма открывает попап, жмём Esc, попап закрывается, ошибок в консоли нет
-    // Второй клик по карточке фильма снова открывает попап, жмём Esc, попап закрывается
-    // Но в консоль падает ошибка - this.#filmDetailsPopup, именно после второго и последующих закрытий попапа
-    // Проблему решил if, но как это устроено я не понял, почему пропадает this.#filmDetailsPopup?
-    // Ведь при клике по карточке фильма он снова должен стать не null
-    if (this.#filmDetailsPopup) {
-      this.#filmDetailsPopup.element.removeEventListener('click', this.#handleCloseFilmDetailsPopup);
-      document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
-      this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
-      this.#filmDetailsPopup = null;
-    }
+    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
+    this.#filmDetailsPopup = null;
   };
 
   #renderFilmDetailsPopup(film) {
@@ -90,6 +81,8 @@ export default class FilmsPresenter {
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);
+
+    document.addEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
     this.#pageBody.classList.add('hide-overflow');
   }
@@ -136,10 +129,13 @@ export default class FilmsPresenter {
       this.#renderFilmCards(this.#films, this.#filmsListContainerComponent.element, FILMS_COUNT_PER_STEP);
 
       if (this.#films.length > FILMS_COUNT_PER_STEP) {
-        this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView();
-        render(this.#filmsListShowMoreBtn, this.#filmsListComponent.element);
+        this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView({
+          onFlmsListShowMoreBtnClick: (evt) => {
+            this.#filmsListShowMoreBtnClickHandler(evt);
+          }
+        });
 
-        this.#filmsListShowMoreBtn.element.addEventListener('click', this.#filmsListShowMoreBtnClickHandler);
+        render(this.#filmsListShowMoreBtn, this.#filmsListComponent.element);
       }
 
       render(this.#filmsListTopRatedComponent, this.#filmsComponent.element);

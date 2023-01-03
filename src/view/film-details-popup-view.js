@@ -201,7 +201,6 @@ export default class FilmDetailsPopupView extends AbstractView {
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
 
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
-    document.addEventListener('keydown', this.#closeFilmDetailsPopupHandler);
   }
 
   get template() {
@@ -210,6 +209,9 @@ export default class FilmDetailsPopupView extends AbstractView {
 
   #closeFilmDetailsPopupHandler = (evt) => {
     evt.preventDefault();
+
+    this.element.querySelector('.film-details__close-btn').removeEventListener('click', this.#closeFilmDetailsPopupHandler);
+
     this.#handleCloseFilmDetailsPopup(evt);
   };
 }

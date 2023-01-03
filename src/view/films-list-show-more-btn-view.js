@@ -5,6 +5,16 @@ function createFilmsListShowMoreBtnTemplate() {
 }
 
 export default class FilmsListShowMoreBtnView extends AbstractView {
+  #handleFlmsListShowMoreBtnClick = null;
+
+  constructor({ onFlmsListShowMoreBtnClick }) {
+    super();
+
+    this.#handleFlmsListShowMoreBtnClick = onFlmsListShowMoreBtnClick;
+
+    this.element.addEventListener('click', this.#handleFlmsListShowMoreBtnClick);
+  }
+
   get template() {
     return createFilmsListShowMoreBtnTemplate();
   }
