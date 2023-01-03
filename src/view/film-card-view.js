@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
@@ -33,27 +33,24 @@ function createFilmCardTemplate({ filmInfo, comments }) {
   `;
 }
 
-export default class FilmCardView {
+export default class FilmCardView extends AbstractView {
   #film = null;
-  #element = null;
+  #handleFilmCardClick = null;
 
-  constructor({ film }) {
+  constructor({ film, onFilmCardClick }) {
+    super();
     this.#film = film;
+    this.#handleFilmCardClick = onFilmCardClick;
+
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#filmCardClickHandler);
   }
 
   get template() {
     return createFilmCardTemplate(this.#film);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #filmCardClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFilmCardClick();
+  };
 }

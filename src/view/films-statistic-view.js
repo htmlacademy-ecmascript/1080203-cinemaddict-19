@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createFilmsStatisticTemplate() {
   return `
@@ -8,22 +8,8 @@ function createFilmsStatisticTemplate() {
   `;
 }
 
-export default class FilmsStatisticView {
-  #element = null;
-
+export default class FilmsStatisticView extends AbstractView {
   get template() {
     return createFilmsStatisticTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

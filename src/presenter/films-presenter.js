@@ -61,11 +61,19 @@ export default class FilmsPresenter {
       return;
     }
 
-    this.#filmDetailsPopup.element.removeEventListener('click', this.#handleCloseFilmDetailsPopup);
-    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+    // Не понимаю, как работаетбез if, поведение следующее:
+    // Первый клик по карточке фильма открывает попап, жмём Esc, попап закрывается, ошибок в консоли нет
+    // Второй клик по карточке фильма снова открывает попап, жмём Esc, попап закрывается
+    // Но в консоль падает ошибка - this.#filmDetailsPopup, именно после второго и последующих закрытий попапа
+    // Проблему решил if, но как это устроено я не понял, почему пропадает this.#filmDetailsPopup?
+    // Ведь при клике по карточке фильма он снова должен стать не null
+    if (this.#filmDetailsPopup) {
+      this.#filmDetailsPopup.element.removeEventListener('click', this.#handleCloseFilmDetailsPopup);
+      document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
-    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
-    this.#filmDetailsPopup = null;
+      this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
+      this.#filmDetailsPopup = null;
+    }
   };
 
   #renderFilmDetailsPopup(film) {
@@ -75,13 +83,13 @@ export default class FilmsPresenter {
 
     this.#filmDetailsPopup = new FilmDetailsPopupView({
       filmDetails: film,
-      filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments)
+      filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments),
+      onCloseFilmDetailsPopup: (evt) => {
+        this.#handleCloseFilmDetailsPopup(evt);
+      }
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);
-
-    this.#filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', this.#handleCloseFilmDetailsPopup);
-    document.addEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
     this.#pageBody.classList.add('hide-overflow');
   }
@@ -93,14 +101,13 @@ export default class FilmsPresenter {
 
   #renderFilmCards(films, filmsContainer, cardsCount) {
     for (let i = 0; i < Math.min(films.length, cardsCount); i++) {
-      const filmCard = new FilmCardView({ film: films[i] });
-      render(filmCard, filmsContainer);
-
-      filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
-        evt.preventDefault();
-
-        this.#renderFilmDetailsPopup(films[i]);
+      const filmCard = new FilmCardView({
+        film: films[i],
+        onFilmCardClick: () => {
+          this.#renderFilmDetailsPopup(films[i]);
+        }
       });
+      render(filmCard, filmsContainer);
     }
   }
 

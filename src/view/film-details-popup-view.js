@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {
   getStringFromArray,
   humanizeDate,
@@ -189,29 +189,27 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
   `;
 }
 
-export default class FilmDetailsPopupView {
+export default class FilmDetailsPopupView extends AbstractView {
   #filmDetails = null;
   #filmComments = null;
-  #element = null;
+  #handleCloseFilmDetailsPopup = null;
 
-  constructor({ filmDetails, filmComments }) {
+  constructor({ filmDetails, filmComments, onCloseFilmDetailsPopup }) {
+    super();
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
+    this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
+
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
+    document.addEventListener('keydown', this.#closeFilmDetailsPopupHandler);
   }
 
   get template() {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #closeFilmDetailsPopupHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseFilmDetailsPopup(evt);
+  };
 }
