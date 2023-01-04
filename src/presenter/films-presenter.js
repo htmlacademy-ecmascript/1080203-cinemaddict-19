@@ -61,7 +61,6 @@ export default class FilmsPresenter {
       return;
     }
 
-    this.#filmDetailsPopup.element.removeEventListener('click', this.#handleCloseFilmDetailsPopup);
     document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
     this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
@@ -75,12 +74,14 @@ export default class FilmsPresenter {
 
     this.#filmDetailsPopup = new FilmDetailsPopupView({
       filmDetails: film,
-      filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments)
+      filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments),
+      onCloseFilmDetailsPopup: (evt) => {
+        this.#handleCloseFilmDetailsPopup(evt);
+      }
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);
 
-    this.#filmDetailsPopup.element.querySelector('.film-details__close-btn').addEventListener('click', this.#handleCloseFilmDetailsPopup);
     document.addEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
     this.#pageBody.classList.add('hide-overflow');
@@ -93,14 +94,13 @@ export default class FilmsPresenter {
 
   #renderFilmCards(films, filmsContainer, cardsCount) {
     for (let i = 0; i < Math.min(films.length, cardsCount); i++) {
-      const filmCard = new FilmCardView({ film: films[i] });
-      render(filmCard, filmsContainer);
-
-      filmCard.element.querySelector('.film-card__link').addEventListener('click', (evt) => {
-        evt.preventDefault();
-
-        this.#renderFilmDetailsPopup(films[i]);
+      const filmCard = new FilmCardView({
+        film: films[i],
+        onFilmCardClick: () => {
+          this.#renderFilmDetailsPopup(films[i]);
+        }
       });
+      render(filmCard, filmsContainer);
     }
   }
 
@@ -129,10 +129,13 @@ export default class FilmsPresenter {
       this.#renderFilmCards(this.#films, this.#filmsListContainerComponent.element, FILMS_COUNT_PER_STEP);
 
       if (this.#films.length > FILMS_COUNT_PER_STEP) {
-        this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView();
-        render(this.#filmsListShowMoreBtn, this.#filmsListComponent.element);
+        this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView({
+          onFlmsListShowMoreBtnClick: (evt) => {
+            this.#filmsListShowMoreBtnClickHandler(evt);
+          }
+        });
 
-        this.#filmsListShowMoreBtn.element.addEventListener('click', this.#filmsListShowMoreBtnClickHandler);
+        render(this.#filmsListShowMoreBtn, this.#filmsListComponent.element);
       }
 
       render(this.#filmsListTopRatedComponent, this.#filmsComponent.element);
