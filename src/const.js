@@ -12,6 +12,13 @@ const DAYJS_DURATION_FORMAT = {
   full: 'H[h] m[m]'
 };
 
+const FILM_FILTER_TYPES_BY_HASH = {
+  all: null,
+  watchlist: 'watchlist',
+  history: 'alreadyWatched',
+  favorites: 'favorite'
+};
+
 export {
   DATE_FORMAT_SHORT,
   DATE_FORMAT_FULL,
@@ -21,5 +28,6 @@ export {
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
-  ESCAPE_KEYCODE
+  ESCAPE_KEYCODE,
+  FILM_FILTER_TYPES_BY_HASH
 };
