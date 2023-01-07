@@ -3,10 +3,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
 import { DAYJS_DURATION_FORMAT, ESCAPE_KEYCODE } from './const';
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function humanizeDate(date, format, fromNow) {
   dayjs.extend(relativeTime);
 
@@ -66,13 +62,48 @@ function isKeydownNotEscapeKey(evt) {
   return evt.type === 'keydown' && evt.keyCode !== ESCAPE_KEYCODE;
 }
 
+function clearChildElements(parentElement) {
+  parentElement.replaceChildren();
+}
+
+function addClassToElement(element, className) {
+  element.classList.add(className);
+}
+
+function removeClassFromElement(element, className) {
+  element.classList.remove(className);
+}
+
+function removeClassFromChildrenElements(parentElement, className) {
+  const childrenLinks = parentElement.querySelectorAll('a');
+  childrenLinks.forEach((link) => {
+    removeClassFromElement(link, className);
+  });
+}
+
+function changeActiveLinkElementByClass(parentElement, linkElement, activeClass) {
+  removeClassFromChildrenElements(parentElement, activeClass);
+  addClassToElement(linkElement, activeClass);
+}
+
+function isLinkElement(element) {
+  return element.tagName === 'A';
+}
+
+function getHashFromLinkElement(linkElement) {
+  return linkElement.hash.slice(1);
+}
+
 export {
-  getRandomArrayElement,
   humanizeDate,
   convertMinutesToHoursAndMinutes,
   transformFirstSymbolToUpperCase,
   getStringFromArray,
   limitTextLength,
   getSingularOrPluralForm,
-  isKeydownNotEscapeKey
+  isKeydownNotEscapeKey,
+  clearChildElements,
+  changeActiveLinkElementByClass,
+  isLinkElement,
+  getHashFromLinkElement
 };
