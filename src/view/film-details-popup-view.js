@@ -7,23 +7,23 @@ import {
 } from '../utils.js';
 import { DATE_FORMAT_FULL } from '../const.js';
 
-function getGenresListElements(genresArray) {
+function getGenresListElements(genres) {
   const genresList = [];
-  genresArray.forEach((genre) => {
+  genres.forEach((genre) => {
     genresList.push(`<span class="film-details__genre">${ transformFirstSymbolToUpperCase(genre) }</span>`);
   });
   return genresList;
 }
 
-function getDetailsControlButtonsListElements(userDetailsObject) {
-  const userDetailsArray = Object.entries(userDetailsObject);
-  const activeClass = 'film-details__control-button--active';
+function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favorite }) {
+  const filmPopupUserDetailActiveClass = 'film-details__control-button--active';
+
   return `
     <button
       type="button"
       class="
         film-details__control-button
-        ${ (userDetailsArray[0][1]) ? activeClass : '' }
+        ${ (watchlist) ? filmPopupUserDetailActiveClass : '' }
         film-details__control-button--watchlist
       "
       id="watchlist"
@@ -36,7 +36,7 @@ function getDetailsControlButtonsListElements(userDetailsObject) {
       type="button"
       class="
         film-details__control-button
-        ${ (userDetailsArray[1][1]) ? activeClass : '' }
+        ${ (alreadyWatched) ? filmPopupUserDetailActiveClass : '' }
         film-details__control-button--watched
       "
       id="watched"
@@ -49,7 +49,7 @@ function getDetailsControlButtonsListElements(userDetailsObject) {
       type="button"
       class="
         film-details__control-button
-        ${ (userDetailsArray[3][1]) ? activeClass : '' }
+        ${ (favorite) ? filmPopupUserDetailActiveClass : '' }
         film-details__control-button--favorite
       "
       id="favorite"

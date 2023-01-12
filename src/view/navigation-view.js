@@ -28,7 +28,6 @@ function createNavigationTemplate(countFilmsByNav) {
 export default class NavigationView extends AbstractView {
   #handleFilmsNavClick = null;
   #films = null;
-  #filmsCounts = {};
 
   constructor({ onFilmsNavClick, films }) {
     super();
@@ -46,13 +45,10 @@ export default class NavigationView extends AbstractView {
     });
   }
 
-  // Правильно ли, что я считаю количество фильмов по каждому фильтру во view?
   #countFilmsByNav() {
-    Object.entries(FILM_FILTER_TYPES_BY_HASH).forEach((navHash) => {
-      this.#filmsCounts[navHash[0]] = this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[navHash[0]]]).length;
-    });
-
-    return this.#filmsCounts;
+    return Object.keys(FILM_FILTER_TYPES_BY_HASH).reduce((acc, hash) => ({
+      ...acc, [hash]: this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[hash]]).length
+    }), {});
   }
 
   get template() {

@@ -94,6 +94,33 @@ function getHashFromLinkElement(linkElement) {
   return linkElement.hash.slice(1);
 }
 
+function getArrayAndObjectValueByPathFromString(nestedPath, nestedObject, separator = '.') {
+  const properties = nestedPath.split(separator);
+  return properties.reduce((previous, current) => previous?.[current], nestedObject);
+}
+
+function sortArrayByNestedObjectProperty(array, nestedPath, fromMaxToMin, cb) {
+  return array.sort((a, b) => {
+    a = getArrayAndObjectValueByPathFromString(nestedPath, a);
+    b = getArrayAndObjectValueByPathFromString(nestedPath, b);
+
+    if (cb) {
+      a = cb(a);
+      b = cb(b);
+    }
+
+    return fromMaxToMin ? b - a : a - b;
+  });
+}
+
+function getDateObjectFromString(stringDate) {
+  return new Date(stringDate);
+}
+
+function copyArrayAndLimitLength(array, min, max) {
+  return array.slice(min, max + 1);
+}
+
 export {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
@@ -105,5 +132,8 @@ export {
   clearChildElements,
   changeActiveLinkElementByClass,
   isLinkElement,
-  getHashFromLinkElement
+  getHashFromLinkElement,
+  copyArrayAndLimitLength,
+  sortArrayByNestedObjectProperty,
+  getDateObjectFromString
 };

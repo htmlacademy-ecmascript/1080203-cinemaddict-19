@@ -1,37 +1,33 @@
 import { filmsMock } from '../mock/films-mock.js';
 import { FILMS_COUNT, FILM_FILTER_TYPES_BY_HASH } from '../const.js';
+import {
+  copyArrayAndLimitLength,
+  sortArrayByNestedObjectProperty,
+  getDateObjectFromString
+} from '../utils.js';
 
 export default class FilmsModel {
   #films = null;
   #filteredFilmsMock = null;
 
   getFilms(filterName = 'all', sortingName = 'default') {
-    // Здесь фильтруется через условие
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
       this.#filteredFilmsMock = filmsMock.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
-      this.#films = this.#filteredFilmsMock.slice(0, FILMS_COUNT + 1);
+      this.#films = copyArrayAndLimitLength(this.#filteredFilmsMock, 0, FILMS_COUNT);
     } else {
-      this.#films = filmsMock;
+      this.#films = copyArrayAndLimitLength(filmsMock, 0, FILMS_COUNT);
     }
 
-    // А сортируется через switch
     switch (sortingName) {
       case 'default':
-        this.#films.sort((a, b) => a.id - b.id);
         break;
       case 'date':
-        this.#films.sort((a, b) => {
-          a = new Date(a.filmInfo.release.date);
-          b = new Date(b.filmInfo.release.date);
-          return b - a;
-        });
+        sortArrayByNestedObjectProperty(this.#films, 'filmInfo.release.date', true, getDateObjectFromString);
         break;
       case 'rating':
-        this.#films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+        sortArrayByNestedObjectProperty(this.#films, 'filmInfo.totalRating', true);
         break;
     }
-
-    // Надо ли приводить к единому способу и сортировку и фильтрацию?
 
     return this.#films;
   }

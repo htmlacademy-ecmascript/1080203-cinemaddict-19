@@ -107,12 +107,10 @@ export default class FilmsPresenter {
     }
   }
 
-  #renderFilmsListShowMoreBtn() {
-    if (this.#films.length > FILMS_COUNT_PER_STEP) {
+  #renderFilmsListShowMoreBtn(renderedFilmCardsCount = FILMS_COUNT_PER_STEP) {
+    if (this.#films.length > renderedFilmCardsCount) {
       this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView({
-        onFlmsListShowMoreBtnClick: (evt) => {
-          this.#filmsListShowMoreBtnClickHandler(evt);
-        }
+        onFlmsListShowMoreBtnClick: this.#filmsListShowMoreBtnClickHandler
       });
 
       render(this.#filmsListShowMoreBtn, this.#filmsListComponent.element);
@@ -141,30 +139,27 @@ export default class FilmsPresenter {
     return [...this.#filmsModel.getFilms(filterName, sortingName)];
   }
 
-  #renderFilteredAndSortedFilmCards = () => {
-    this.#renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
-
+  #renderFilteredAndSortedFilmCards = (renderedFilmCardsCount) => {
     clearChildElements(this.#filmsListContainerComponent.element);
     this.#removeFilmsListShowMoreBtn();
 
     this.#films = this.#getFilteredAndSortedFilmsList(this.#filterName, this.#sortingName);
 
-    this.#renderFilmCards(this.#films, this.#filmsListContainerComponent.element, FILMS_COUNT_PER_STEP);
-    this.#renderFilmsListShowMoreBtn();
+    this.#renderFilmCards(this.#films, this.#filmsListContainerComponent.element, renderedFilmCardsCount);
+    this.#renderFilmsListShowMoreBtn(renderedFilmCardsCount);
   };
 
-  // Правильно ли назвать функцию hamndler?
   #filteredFilmCardsHandler = (filterName) => {
     this.#filterName = filterName;
+    this.#renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
 
-    this.#renderFilteredAndSortedFilmCards();
+    this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
   };
 
-  // Правильно ли назвать функцию hamndler?
   #sortedFilmCardsHandler = (sortingName) => {
     this.#sortingName = sortingName;
 
-    this.#renderFilteredAndSortedFilmCards();
+    this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
   };
 
   init() {
