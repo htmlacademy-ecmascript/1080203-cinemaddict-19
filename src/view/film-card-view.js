@@ -9,7 +9,9 @@ import {
 } from '../utils.js';
 import { COMMENT_FORMS, DATE_FORMAT_SHORT } from '../const.js';
 
-function createFilmCardTemplate({ filmInfo, comments }) {
+function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
+  const filmCardUserDetailActiveClass = 'film-card__controls-item--active';
+
   return `
     <article class="film-card">
       <a class="film-card__link">
@@ -25,9 +27,38 @@ function createFilmCardTemplate({ filmInfo, comments }) {
           <span class="film-card__comments">${ comments.length } ${ getSingularOrPluralForm(COMMENT_FORMS, comments.length) }</span>
       </a>
       <div class="film-card__controls">
-          <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-          <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-          <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+          <button
+            class="
+              film-card__controls-item
+              film-card__controls-item--add-to-watchlist
+              ${ (userDetails.watchlist) ? filmCardUserDetailActiveClass : '' }
+            "
+            type="button"
+          >
+            Add to watchlist
+          </button>
+
+          <button
+            class="
+              film-card__controls-item
+              film-card__controls-item--mark-as-watched
+              ${ (userDetails.alreadyWatched) ? filmCardUserDetailActiveClass : '' }
+            "
+            type="button"
+          >
+            Mark as watched
+          </button>
+
+          <button
+            class="
+              film-card__controls-item
+              film-card__controls-item--favorite
+              ${ (userDetails.favorite) ? filmCardUserDetailActiveClass : '' }
+            "
+            type="button"
+          >
+            Mark as favorite
+          </button>
       </div>
     </article>
   `;
@@ -39,6 +70,7 @@ export default class FilmCardView extends AbstractView {
 
   constructor({ film, onFilmCardClick }) {
     super();
+
     this.#film = film;
     this.#handleFilmCardClick = onFilmCardClick;
 

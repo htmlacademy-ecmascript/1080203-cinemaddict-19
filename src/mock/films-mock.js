@@ -1,5 +1,3 @@
-import { getRandomArrayElement } from '../utils';
-
 const filmsMock = [
   {
     'id': 0,
@@ -22,7 +20,7 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 1'
     },
     'userDetails': {
-      'watchlist': false,
+      'watchlist': true,
       'alreadyWatched': true,
       'watchingDate': '2019-04-12T16:12:32.554Z',
       'favorite': false
@@ -41,7 +39,7 @@ const filmsMock = [
       'writers': ['Сценарист 2-1', 'Сценарист 2-2'],
       'actors': ['Актёр 2-1', 'Актёр 2-2', 'Актёр 2-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1820-05-11T00:00:00.000Z',
         'releaseCountry': 'Mexico'
       },
       'duration': 97,
@@ -49,10 +47,10 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 2'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   },
   {
@@ -68,7 +66,7 @@ const filmsMock = [
       'writers': ['Сценарист 3-1', 'Сценарист 3-2'],
       'actors': ['Актёр 3-1', 'Актёр 3-2', 'Актёр 3-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1821-05-11T00:00:00.000Z',
         'releaseCountry': 'Spain'
       },
       'duration': 77,
@@ -95,7 +93,7 @@ const filmsMock = [
       'writers': ['Сценарист 4-1', 'Сценарист 4-2'],
       'actors': ['Актёр 4-1', 'Актёр 4-2', 'Актёр 4-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1822-05-11T00:00:00.000Z',
         'releaseCountry': 'France'
       },
       'duration': 77,
@@ -103,10 +101,10 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 4'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   },
   {
@@ -122,7 +120,7 @@ const filmsMock = [
       'writers': ['Сценарист 5-1', 'Сценарист 5-2'],
       'actors': ['Актёр 5-1', 'Актёр 5-2', 'Актёр 5-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1823-05-11T00:00:00.000Z',
         'releaseCountry': 'Germany'
       },
       'duration': 73,
@@ -149,7 +147,7 @@ const filmsMock = [
       'writers': ['Сценарист 6-1', 'Сценарист 6-2'],
       'actors': ['Актёр 6-1', 'Актёр 6-2', 'Актёр 6-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1824-05-11T00:00:00.000Z',
         'releaseCountry': 'Canada'
       },
       'duration': 37,
@@ -157,10 +155,10 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 6'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   },
   {
@@ -176,7 +174,7 @@ const filmsMock = [
       'writers': ['Сценарист 7-1', 'Сценарист 7-2'],
       'actors': ['Актёр 7-1', 'Актёр 7-2', 'Актёр 7-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1825-05-11T00:00:00.000Z',
         'releaseCountry': 'Australia'
       },
       'duration': 57,
@@ -203,7 +201,7 @@ const filmsMock = [
       'writers': ['Сценарист 8-1', 'Сценарист 8-2'],
       'actors': ['Актёр 8-1', 'Актёр 8-2', 'Актёр 8-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1826-05-11T00:00:00.000Z',
         'releaseCountry': 'New Zealand'
       },
       'duration': 74,
@@ -211,10 +209,10 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 8'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   },
   {
@@ -230,7 +228,7 @@ const filmsMock = [
       'writers': ['Сценарист 9-1', 'Сценарист 9-2'],
       'actors': ['Актёр 9-1', 'Актёр 9-2', 'Актёр 9-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1827-05-11T00:00:00.000Z',
         'releaseCountry': 'Ukraine'
       },
       'duration': 98,
@@ -257,7 +255,7 @@ const filmsMock = [
       'writers': ['Сценарист 10-1', 'Сценарист 10-2'],
       'actors': ['Актёр 10-1', 'Актёр 10-2', 'Актёр 10-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1828-05-11T00:00:00.000Z',
         'releaseCountry': 'England'
       },
       'duration': 88,
@@ -265,10 +263,10 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 10'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   },
   {
@@ -284,7 +282,7 @@ const filmsMock = [
       'writers': ['Сценарист 11-1', 'Сценарист 11-2'],
       'actors': ['Актёр 11-1', 'Актёр 11-2', 'Актёр 11-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1829-05-11T00:00:00.000Z',
         'releaseCountry': 'Italy'
       },
       'duration': 73,
@@ -311,7 +309,7 @@ const filmsMock = [
       'writers': ['Сценарист 12-1', 'Сценарист 12-2'],
       'actors': ['Актёр 12-1', 'Актёр 12-2', 'Актёр 12-3'],
       'release': {
-        'date': '1819-05-11T00:00:00.000Z',
+        'date': '1830-05-11T00:00:00.000Z',
         'releaseCountry': 'USA'
       },
       'duration': 77,
@@ -319,16 +317,12 @@ const filmsMock = [
       'description': 'Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. Описание фильма из более 139 символов. 12'
     },
     'userDetails': {
-      'watchlist': false,
-      'alreadyWatched': true,
+      'watchlist': true,
+      'alreadyWatched': false,
       'watchingDate': '2019-04-12T16:12:32.554Z',
-      'favorite': false
+      'favorite': true
     }
   }
 ];
 
-function getRandomFilm() {
-  return getRandomArrayElement(filmsMock);
-}
-
-export { getRandomFilm };
+export { filmsMock };
