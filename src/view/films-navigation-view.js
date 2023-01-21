@@ -1,9 +1,14 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FILM_FILTER_TYPES_BY_HASH } from '../const.js';
+import {
+  FILM_FILTER_TYPES_BY_HASH,
+  ACTIVE_NAV_ITEM_CLASS,
+  USER_DETAILS_VALUES_BY_BTN_ID
+} from '../const.js';
 import {
   isLinkElement,
   changeActiveLinkElementByClass,
-  getHashFromLinkElement
+  getHashFromLinkElement,
+  getObjectKeyByValue
 } from '../utils.js';
 
 function createNavigationTemplate(countFilmsByNav) {
@@ -25,7 +30,7 @@ function createNavigationTemplate(countFilmsByNav) {
   `;
 }
 
-export default class NavigationView extends AbstractView {
+export default class FilmsNavigationView extends AbstractView {
   #handleFilmsNavClick = null;
   #films = null;
 
@@ -37,8 +42,9 @@ export default class NavigationView extends AbstractView {
 
     this.element.addEventListener('click', (evt) => {
       evt.preventDefault();
+
       if (isLinkElement(evt.target)) {
-        changeActiveLinkElementByClass(this.element, evt.target, 'main-navigation__item--active');
+        changeActiveLinkElementByClass(this.element, evt.target, ACTIVE_NAV_ITEM_CLASS);
 
         this.#handleFilmsNavClick(getHashFromLinkElement(evt.target));
       }
@@ -53,5 +59,12 @@ export default class NavigationView extends AbstractView {
 
   get template() {
     return createNavigationTemplate(this.#countFilmsByNav());
+  }
+
+  changeFilmCountByControlButtonId(controlButtonId) {
+    const newCountFilmsByNav = this.#countFilmsByNav();
+    const filterHash = getObjectKeyByValue(FILM_FILTER_TYPES_BY_HASH, USER_DETAILS_VALUES_BY_BTN_ID[controlButtonId]);
+    const elem = Array.from(this.element.children).find((el) => el.href.includes(filterHash));
+    elem.querySelector('span').innerText = newCountFilmsByNav[filterHash];
   }
 }

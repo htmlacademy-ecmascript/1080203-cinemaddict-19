@@ -121,6 +121,18 @@ function copyArrayAndLimitLength(array, min, max) {
   return array.slice(min, max + 1);
 }
 
+function changeElementActivityByClass({ element, className, activityStatus }) {
+  if (activityStatus) {
+    element.classList.add(className);
+  } else {
+    element.classList.remove(className);
+  }
+}
+
+function getObjectKeyByValue(object, value) {
+  return Object.keys(object).find((key) => object[key] === value);
+}
+
 export {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
@@ -135,5 +147,7 @@ export {
   getHashFromLinkElement,
   copyArrayAndLimitLength,
   sortArrayByNestedObjectProperty,
-  getDateObjectFromString
+  getDateObjectFromString,
+  changeElementActivityByClass,
+  getObjectKeyByValue
 };

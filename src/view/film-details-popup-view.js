@@ -3,9 +3,14 @@ import {
   getStringFromArray,
   humanizeDate,
   convertMinutesToHoursAndMinutes,
-  transformFirstSymbolToUpperCase
+  transformFirstSymbolToUpperCase,
+  changeElementActivityByClass
 } from '../utils.js';
-import { DATE_FORMAT_FULL } from '../const.js';
+import {
+  DATE_FORMAT_FULL,
+  ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
+  ACTIVE_FILM_CARD_USER_DETAIL_CLASS
+} from '../const.js';
 
 function getGenresListElements(genres) {
   const genresList = [];
@@ -16,14 +21,12 @@ function getGenresListElements(genres) {
 }
 
 function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favorite }) {
-  const filmPopupUserDetailActiveClass = 'film-details__control-button--active';
-
   return `
     <button
       type="button"
       class="
         film-details__control-button
-        ${ (watchlist) ? filmPopupUserDetailActiveClass : '' }
+        ${ (watchlist) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
         film-details__control-button--watchlist
       "
       id="watchlist"
@@ -36,7 +39,7 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
       type="button"
       class="
         film-details__control-button
-        ${ (alreadyWatched) ? filmPopupUserDetailActiveClass : '' }
+        ${ (alreadyWatched) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
         film-details__control-button--watched
       "
       id="watched"
@@ -49,7 +52,7 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
       type="button"
       class="
         film-details__control-button
-        ${ (favorite) ? filmPopupUserDetailActiveClass : '' }
+        ${ (favorite) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
         film-details__control-button--favorite
       "
       id="favorite"
@@ -193,14 +196,25 @@ export default class FilmDetailsPopupView extends AbstractView {
   #filmDetails = null;
   #filmComments = null;
   #handleCloseFilmDetailsPopup = null;
+  #handleControlButtonsClick = null;
+  #filmCardButtonsElement = null;
 
-  constructor({ filmDetails, filmComments, onCloseFilmDetailsPopup }) {
+  constructor({
+    filmDetails,
+    filmComments,
+    onCloseFilmDetailsPopup,
+    onControlButtonsClick,
+    filmCardButtonsElement
+  }) {
     super();
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
+    this.#handleControlButtonsClick = onControlButtonsClick;
+    this.#filmCardButtonsElement = filmCardButtonsElement;
 
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivity);
   }
 
   get template() {
@@ -213,5 +227,27 @@ export default class FilmDetailsPopupView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').removeEventListener('click', this.#closeFilmDetailsPopupHandler);
 
     this.#handleCloseFilmDetailsPopup(evt);
+  };
+
+  #changeControllButtonsActivity = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+
+    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#filmDetails.id);
+
+    changeElementActivityByClass({
+      element: this.element.querySelector(`#${changedUserDetailId}`),
+      className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
+      activityStatus: changedUserDetailValue
+    });
+
+    changeElementActivityByClass({
+      element: this.#filmCardButtonsElement.querySelector(`[data-id="${changedUserDetailId}"]`),
+      className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
+      activityStatus: changedUserDetailValue
+    });
   };
 }

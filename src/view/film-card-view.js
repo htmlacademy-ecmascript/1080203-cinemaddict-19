@@ -5,13 +5,16 @@ import {
   getStringFromArray,
   transformFirstSymbolToUpperCase,
   limitTextLength,
-  getSingularOrPluralForm
+  getSingularOrPluralForm,
+  changeElementActivityByClass
 } from '../utils.js';
-import { COMMENT_FORMS, DATE_FORMAT_SHORT } from '../const.js';
+import {
+  COMMENT_FORMS,
+  DATE_FORMAT_SHORT,
+  ACTIVE_FILM_CARD_USER_DETAIL_CLASS
+} from '../const.js';
 
 function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
-  const filmCardUserDetailActiveClass = 'film-card__controls-item--active';
-
   return `
     <article class="film-card">
       <a class="film-card__link">
@@ -31,9 +34,10 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
             class="
               film-card__controls-item
               film-card__controls-item--add-to-watchlist
-              ${ (userDetails.watchlist) ? filmCardUserDetailActiveClass : '' }
+              ${ (userDetails.watchlist) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
             "
             type="button"
+            data-id="watchlist"
           >
             Add to watchlist
           </button>
@@ -42,9 +46,10 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
             class="
               film-card__controls-item
               film-card__controls-item--mark-as-watched
-              ${ (userDetails.alreadyWatched) ? filmCardUserDetailActiveClass : '' }
+              ${ (userDetails.alreadyWatched) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
             "
             type="button"
+            data-id="watched"
           >
             Mark as watched
           </button>
@@ -53,9 +58,10 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
             class="
               film-card__controls-item
               film-card__controls-item--favorite
-              ${ (userDetails.favorite) ? filmCardUserDetailActiveClass : '' }
+              ${ (userDetails.favorite) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
             "
             type="button"
+            data-id="favorite"
           >
             Mark as favorite
           </button>
@@ -67,14 +73,17 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
 export default class FilmCardView extends AbstractView {
   #film = null;
   #handleFilmCardClick = null;
+  #handleControlButtonsClick = null;
 
-  constructor({ film, onFilmCardClick }) {
+  constructor({ film, onFilmCardClick, onControlButtonsClick }) {
     super();
 
     this.#film = film;
     this.#handleFilmCardClick = onFilmCardClick;
+    this.#handleControlButtonsClick = onControlButtonsClick;
 
     this.element.querySelector('.film-card__link').addEventListener('click', this.#filmCardClickHandler);
+    this.element.querySelector('.film-card__controls').addEventListener('click', this.#changeControllButtonsActivity);
   }
 
   get template() {
@@ -83,6 +92,22 @@ export default class FilmCardView extends AbstractView {
 
   #filmCardClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFilmCardClick();
+    this.#handleFilmCardClick(this.element.querySelector('.film-card__controls'));
+  };
+
+  #changeControllButtonsActivity = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+
+    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#film.id);
+
+    changeElementActivityByClass({
+      element: this.element.querySelector(`[data-id="${changedUserDetailId}"]`),
+      className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
+      activityStatus: changedUserDetailValue
+    });
   };
 }
