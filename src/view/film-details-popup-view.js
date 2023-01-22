@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {
   getStringFromArray,
   humanizeDate,
@@ -192,7 +192,7 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
   `;
 }
 
-export default class FilmDetailsPopupView extends AbstractView {
+export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
   #filmComments = null;
   #handleCloseFilmDetailsPopup = null;
@@ -209,6 +209,11 @@ export default class FilmDetailsPopupView extends AbstractView {
     super();
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
+
+    this._setState(FilmDetailsPopupView.parseFilmCommentsToState(filmComments));
+    console.log(this.#filmComments);
+    console.log(Object.values(this._state));
+
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
     this.#filmCardButtonsElement = filmCardButtonsElement;
@@ -251,11 +256,20 @@ export default class FilmDetailsPopupView extends AbstractView {
     });
   };
 
+<<<<<<< HEAD
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
     changeElementActivityByClass({
       element: this.element.querySelector(`#${changedUserDetailId}`),
       className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
       activityStatus: changedUserDetailValue
     });
+=======
+  static parseFilmCommentsToState(filmComments) {
+    return [ ...filmComments ];
+  }
+
+  static parseStateToFilmComments(state) {
+    return [ ...state ];
+>>>>>>> 8627534 (Started work on state of popup)
   }
 }
