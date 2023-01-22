@@ -67,4 +67,10 @@ export default class FilmDetailsPopupPresenter {
     this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
     this.#filmDetailsPopup = null;
   };
+
+  changePopupControlButtonsActivity(userDetail) {
+    if (this.#filmDetailsPopup) {
+      this.#filmDetailsPopup.changePopupControlButtonsActivity(userDetail);
+    }
+  }
 }

@@ -38,18 +38,10 @@ export default class FilmsModel {
   }
 
   changeControlButtonsActivity(changedUserDetailId, filmId) {
+    const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
     const currentFilm = this.#films.find((film) => (film.id === filmId));
 
-    // Я получил ID фильма и ID кнопки, теперь мне нужно изменить данные в массиве фильмов
-    // Для этого я хочу воспользоваться короткой конструкцией userDetailsValue = !userDetailsValue
-    // Но она не работает
-
-    // Почему вот так не работает
-    // let userDetailsValue = currentFilm.userDetails[USER_DETAILS_VALUES_BY_BTN_ID[userDetailsKey]];
-    // userDetailsValue = !userDetailsValue;
-
-    // А вот так работает
-    currentFilm.userDetails[USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId]] = !currentFilm.userDetails[USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId]]; // Как сделать эту запись короче?
+    currentFilm.userDetails[key] = !currentFilm.userDetails[key];
   }
 
   getFilmById(filmId) {

@@ -95,13 +95,16 @@ export default class FilmsPresenter {
 
   #controlButtonsClickHandler = (evt, filmId) => {
     const changedUserDetailId = evt.target.id || evt.target.dataset.id;
+    const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
+    const hash = FILM_FILTER_TYPES_BY_HASH[this.#filmsFilterName];
 
     this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, filmId);
 
-    const changedUserDetailValue = this.#filmsModel.getFilmById(filmId).userDetails[USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId]]; // Запись лезет на вторую строку, как можно упростить?
+    const changedUserDetailValue = this.#filmsModel.getFilmById(filmId).userDetails[key];
 
-    // Запись лезет на вторую строку, как можно упростить?
-    if (USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId] === FILM_FILTER_TYPES_BY_HASH[this.#filmsFilterName]) {
+    this.#filmCards.changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue });
+
+    if (key === hash) {
       this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
     }
 

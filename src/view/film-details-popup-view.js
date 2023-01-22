@@ -250,4 +250,12 @@ export default class FilmDetailsPopupView extends AbstractView {
       activityStatus: changedUserDetailValue
     });
   };
+
+  changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
+    changeElementActivityByClass({
+      element: this.element.querySelector(`#${changedUserDetailId}`),
+      className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
+      activityStatus: changedUserDetailValue
+    });
+  }
 }

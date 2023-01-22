@@ -30,4 +30,8 @@ export default class FilmCardsPresenter {
       render(filmCard, this.#filmsContainer);
     }
   }
+
+  changePopupControlButtonsActivity(userDetail) {
+    this.#filmDetailsPopup.changePopupControlButtonsActivity(userDetail);
+  }
 }
