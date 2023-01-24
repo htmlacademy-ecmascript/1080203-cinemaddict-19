@@ -8,14 +8,13 @@ import FilmsListEmptyView from '../view/films-list-empty-view.js';
 import FilmCardsPresenter from './film-cards-presenter.js';
 import FilmsNavigationPresenter from './films-navigation-presenter.js';
 import FilmsSortingPresenter from './films-sorting-presenter.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import { clearChildElements } from '../utils.js';
 import {
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
-  USER_DETAILS_VALUES_BY_BTN_ID,
-  FILM_FILTER_TYPES_BY_HASH
+  USER_DETAILS_VALUES_BY_BTN_ID
 } from '../const.js';
 
 export default class FilmsPresenter {
@@ -30,7 +29,6 @@ export default class FilmsPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #films = null;
-  #commentsModel = null;
   #filmsListShowMoreBtn = null;
   #renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
   #filmsFilterName = null;
@@ -43,10 +41,9 @@ export default class FilmsPresenter {
   constructor({filmsContainer, filmsModel, commentsModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
-    this.#commentsModel = commentsModel;
     this.#films = [...this.#filmsModel.getFilms()];
     this.#filmCards = new FilmCardsPresenter({
-      commentsModel: this.#commentsModel,
+      commentsModel,
       onControlButtonsClick: this.#controlButtonsClickHandler
     });
     this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnPresenter({
@@ -96,7 +93,6 @@ export default class FilmsPresenter {
   #controlButtonsClickHandler = (evt, filmId) => {
     const changedUserDetailId = evt.target.id || evt.target.dataset.id;
     const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
-    const hash = FILM_FILTER_TYPES_BY_HASH[this.#filmsFilterName];
 
     this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, filmId);
 
@@ -104,9 +100,7 @@ export default class FilmsPresenter {
 
     this.#filmCards.changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue });
 
-    if (key === hash) {
-      this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
-    }
+    this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
 
     this.#filmsNavigationPresenter.changeFilmCountByControlButtonId(changedUserDetailId);
 

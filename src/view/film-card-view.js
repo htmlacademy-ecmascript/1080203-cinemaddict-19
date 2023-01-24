@@ -18,23 +18,23 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
   return `
     <article class="film-card">
       <a class="film-card__link">
-          <h3 class="film-card__title">${ filmInfo.title }</h3>
-          <p class="film-card__rating">${ filmInfo.totalRating }</p>
+          <h3 class="film-card__title">${filmInfo.title}</h3>
+          <p class="film-card__rating">${filmInfo.totalRating}</p>
           <p class="film-card__info">
-            <span class="film-card__year">${ humanizeDate(filmInfo.release.date, DATE_FORMAT_SHORT) }</span>
-            <span class="film-card__duration">${ convertMinutesToHoursAndMinutes(filmInfo.duration) }</span>
-            <span class="film-card__genre">${ getStringFromArray(filmInfo.genre, ', ', transformFirstSymbolToUpperCase) }</span>
+            <span class="film-card__year">${humanizeDate(filmInfo.release.date, DATE_FORMAT_SHORT)}</span>
+            <span class="film-card__duration">${convertMinutesToHoursAndMinutes(filmInfo.duration)}</span>
+            <span class="film-card__genre">${getStringFromArray(filmInfo.genre, ', ', transformFirstSymbolToUpperCase)}</span>
           </p>
-          <img src="./${ filmInfo.poster }" alt="" class="film-card__poster">
-          <p class="film-card__description">${ limitTextLength(filmInfo.description, 139) }</p>
-          <span class="film-card__comments">${ comments.length } ${ getSingularOrPluralForm(COMMENT_FORMS, comments.length) }</span>
+          <img src="./${filmInfo.poster}" alt="" class="film-card__poster">
+          <p class="film-card__description">${limitTextLength(filmInfo.description, 139)}</p>
+          <span class="film-card__comments">${comments.length} ${getSingularOrPluralForm(COMMENT_FORMS, comments.length)}</span>
       </a>
       <div class="film-card__controls">
           <button
             class="
               film-card__controls-item
               film-card__controls-item--add-to-watchlist
-              ${ (userDetails.watchlist) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
+              ${(userDetails.watchlist) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : ''}
             "
             type="button"
             data-id="watchlist"
@@ -46,7 +46,7 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
             class="
               film-card__controls-item
               film-card__controls-item--mark-as-watched
-              ${ (userDetails.alreadyWatched) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
+              ${userDetails.alreadyWatched ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : ''}
             "
             type="button"
             data-id="watched"
@@ -58,7 +58,7 @@ function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
             class="
               film-card__controls-item
               film-card__controls-item--favorite
-              ${ (userDetails.favorite) ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : '' }
+              ${userDetails.favorite ? ACTIVE_FILM_CARD_USER_DETAIL_CLASS : ''}
             "
             type="button"
             data-id="favorite"

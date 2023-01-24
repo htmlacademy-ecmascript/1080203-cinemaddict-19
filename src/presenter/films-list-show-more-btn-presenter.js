@@ -20,9 +20,6 @@ export default class FilmsListShowMoreBtnPresenter {
   init({ renderedFilmCardsCount, films }) {
     this.#films = films;
     this.#renderedFilmCardsCount = renderedFilmCardsCount ? renderedFilmCardsCount : FILMS_COUNT_PER_STEP;
-
-    // Правильно ли создавать каждый раз новый экземпляр кнопки?
-    // Пробовал создавать один экземпляр в конструкторе, но при использовании фильтра и сортировки переставал действовать обработчик
     this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnView({
       onFlmsListShowMoreBtnClick: this.#filmsListShowMoreBtnClickHandler
     });

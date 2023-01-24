@@ -19,10 +19,6 @@ export default class FilmDetailsPopupPresenter {
       this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
     }
 
-    if (this.#filmComments.length) {
-      this.#filmComments.length = 0;
-    }
-
     this.#filmDetailsPopup = new FilmDetailsPopupView({
       filmDetails: film,
       filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments),
@@ -43,6 +39,8 @@ export default class FilmDetailsPopupPresenter {
   #removeFilmDetailsPopup(parentElement, childElement) {
     parentElement.removeChild(childElement);
     parentElement.classList.remove('hide-overflow');
+    this.#filmComments.length = 0;
+    this.#filmDetailsPopup = null;
   }
 
   #getCommentsByIds(comments, ids) {
@@ -65,8 +63,13 @@ export default class FilmDetailsPopupPresenter {
     document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
 
     this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
-    this.#filmDetailsPopup = null;
   };
+
+  remove() {
+    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+
+    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
+  }
 
   changePopupControlButtonsActivity(userDetail) {
     if (this.#filmDetailsPopup) {

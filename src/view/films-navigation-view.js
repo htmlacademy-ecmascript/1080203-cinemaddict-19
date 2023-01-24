@@ -64,7 +64,8 @@ export default class FilmsNavigationView extends AbstractView {
   changeFilmCountByControlButtonId(controlButtonId) {
     const newCountFilmsByNav = this.#countFilmsByNav();
     const filterHash = getObjectKeyByValue(FILM_FILTER_TYPES_BY_HASH, USER_DETAILS_VALUES_BY_BTN_ID[controlButtonId]);
-    const elem = Array.from(this.element.children).find((el) => el.href.includes(filterHash));
-    elem.querySelector('span').innerText = newCountFilmsByNav[filterHash];
+    const filterLink = Array.from(this.element.children).find((link) => link.href.includes(filterHash));
+
+    filterLink.querySelector('span').innerText = newCountFilmsByNav[filterHash];
   }
 }

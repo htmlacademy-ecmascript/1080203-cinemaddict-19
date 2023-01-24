@@ -15,7 +15,7 @@ import {
 function getGenresListElements(genres) {
   const genresList = [];
   genres.forEach((genre) => {
-    genresList.push(`<span class="film-details__genre">${ transformFirstSymbolToUpperCase(genre) }</span>`);
+    genresList.push(`<span class="film-details__genre">${transformFirstSymbolToUpperCase(genre)}</span>`);
   });
   return genresList;
 }
@@ -26,7 +26,7 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
       type="button"
       class="
         film-details__control-button
-        ${ (watchlist) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
+        ${watchlist ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : ''}
         film-details__control-button--watchlist
       "
       id="watchlist"
@@ -39,7 +39,7 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
       type="button"
       class="
         film-details__control-button
-        ${ (alreadyWatched) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
+        ${alreadyWatched ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : ''}
         film-details__control-button--watched
       "
       id="watched"
@@ -52,7 +52,7 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
       type="button"
       class="
         film-details__control-button
-        ${ (favorite) ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : '' }
+        ${favorite ? ACTIVE_FILM_POPUP_USER_DETAIL_CLASS : ''}
         film-details__control-button--favorite
       "
       id="favorite"
@@ -69,14 +69,14 @@ function getFilmCommentsListElements(comments) {
     filmCommentsListElements.push(`
       <li class="film-details__comment">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${ comment.emotion }.png" width="55" height="55" alt="emoji-smile">
+          <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
         </span>
         <div>
-          <p class="film-details__comment-text">${ comment.comment }</p>
+          <p class="film-details__comment-text">${comment.comment}</p>
           <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${ comment.author }</span>
-            <span class="film-details__comment-day">${ humanizeDate(comment.date, DATE_FORMAT_FULL, true) }</span>
-            <button class="film-details__comment-delete" data-comment-id="${ comment.id }">Delete</button>
+            <span class="film-details__comment-author">${comment.author}</span>
+            <span class="film-details__comment-day">${humanizeDate(comment.date, DATE_FORMAT_FULL, true)}</span>
+            <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
           </p>
         </div>
       </li>
@@ -95,66 +95,66 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./${ filmInfo.poster }" alt="${ filmInfo.alternativeTitle }">
+              <img class="film-details__poster-img" src="./${filmInfo.poster}" alt="${filmInfo.alternativeTitle}">
 
-              <p class="film-details__age">${ filmInfo.ageRating }+</p>
+              <p class="film-details__age">${filmInfo.ageRating}+</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${ filmInfo.title }</h3>
-                  <p class="film-details__title-original">Original: ${ filmInfo.alternativeTitle }</p>
+                  <h3 class="film-details__title">${filmInfo.title}</h3>
+                  <p class="film-details__title-original">Original: ${filmInfo.alternativeTitle}</p>
                 </div>
 
                 <div class="film-details__rating">
-                  <p class="film-details__total-rating">${ filmInfo.totalRating }</p>
+                  <p class="film-details__total-rating">${filmInfo.totalRating}</p>
                 </div>
               </div>
 
               <table class="film-details__table">
                 <tr class="film-details__row">
                   <td class="film-details__term">Director</td>
-                  <td class="film-details__cell">${ filmInfo.director }</td>
+                  <td class="film-details__cell">${filmInfo.director}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${ getStringFromArray(filmInfo.writers, ', ') }</td>
+                  <td class="film-details__cell">${getStringFromArray(filmInfo.writers, ', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${ getStringFromArray(filmInfo.actors, ', ') }</td>
+                  <td class="film-details__cell">${getStringFromArray(filmInfo.actors, ', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${ humanizeDate(filmInfo.release.date, DATE_FORMAT_FULL) }</td>
+                  <td class="film-details__cell">${humanizeDate(filmInfo.release.date, DATE_FORMAT_FULL)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
-                  <td class="film-details__cell">${ convertMinutesToHoursAndMinutes(filmInfo.duration) }</td>
+                  <td class="film-details__cell">${convertMinutesToHoursAndMinutes(filmInfo.duration)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${ filmInfo.release.releaseCountry }</td>
+                  <td class="film-details__cell">${filmInfo.release.releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Genres</td>
-                  <td class="film-details__cell">${ getStringFromArray(getGenresListElements(filmInfo.genre), '') }</td>
+                  <td class="film-details__cell">${getStringFromArray(getGenresListElements(filmInfo.genre), '')}</td>
                 </tr>
               </table>
 
-              <p class="film-details__film-description">${ filmInfo.description }</p>
+              <p class="film-details__film-description">${filmInfo.description}</p>
             </div>
           </div>
 
-          <section class="film-details__controls">${ getDetailsControlButtonsListElements(userDetails) }</section>
+          <section class="film-details__controls">${getDetailsControlButtonsListElements(userDetails)}</section>
         </div>
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${ comments.length }</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-            <ul class="film-details__comments-list">${ getFilmCommentsListElements(comments) }</ul>
+            <ul class="film-details__comments-list">${getFilmCommentsListElements(comments)}</ul>
 
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label"></div>
