@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { ACTIVE_SORTING_ITEM_CLASS } from '../const.js';
 import {
   isLinkElement,
   changeActiveLinkElementByClass,
@@ -15,7 +16,7 @@ function createSortingTemplate() {
   `;
 }
 
-export default class SortingView extends AbstractView {
+export default class FilmsSortingView extends AbstractView {
   #handleFilmsSortingClick = null;
 
   constructor({ onFilmsSortingClick }) {
@@ -26,7 +27,7 @@ export default class SortingView extends AbstractView {
     this.element.addEventListener('click', (evt) => {
       evt.preventDefault();
       if (isLinkElement(evt.target)) {
-        changeActiveLinkElementByClass(this.element, evt.target, 'sort__button--active');
+        changeActiveLinkElementByClass(this.element, evt.target, ACTIVE_SORTING_ITEM_CLASS);
 
         this.#handleFilmsSortingClick(getHashFromLinkElement(evt.target));
       }

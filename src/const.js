@@ -19,6 +19,17 @@ const FILM_FILTER_TYPES_BY_HASH = {
   favorites: 'favorite'
 };
 
+const USER_DETAILS_VALUES_BY_BTN_ID = {
+  watchlist: 'watchlist',
+  watched: 'alreadyWatched',
+  favorite: 'favorite'
+};
+
+const ACTIVE_NAV_ITEM_CLASS = 'main-navigation__item--active';
+const ACTIVE_SORTING_ITEM_CLASS = 'sort__button--active';
+const ACTIVE_FILM_CARD_USER_DETAIL_CLASS = 'film-card__controls-item--active';
+const ACTIVE_FILM_POPUP_USER_DETAIL_CLASS = 'film-details__control-button--active';
+
 export {
   DATE_FORMAT_SHORT,
   DATE_FORMAT_FULL,
@@ -29,5 +40,10 @@ export {
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
   ESCAPE_KEYCODE,
-  FILM_FILTER_TYPES_BY_HASH
+  FILM_FILTER_TYPES_BY_HASH,
+  ACTIVE_NAV_ITEM_CLASS,
+  ACTIVE_SORTING_ITEM_CLASS,
+  ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
+  ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
+  USER_DETAILS_VALUES_BY_BTN_ID
 };
