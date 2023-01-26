@@ -20,6 +20,10 @@ function getGenresListElements(genres) {
   return genresList;
 }
 
+function getChosenEmojiImgElement(emojiName) {
+  return emojiName ? `<img src="./images/emoji/${emojiName}.png" width="70" height="70" alt="emoji">` : '';
+}
+
 function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favorite }) {
   return `
     <button
@@ -82,10 +86,11 @@ function getFilmCommentsListElements(comments) {
       </li>
     `);
   });
-  return filmCommentsListElements;
+
+  return filmCommentsListElements.join('');
 }
 
-function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
+function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments, state) {
   return `
     <section class="film-details">
       <div class="film-details__inner">
@@ -157,7 +162,7 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments) {
             <ul class="film-details__comments-list">${getFilmCommentsListElements(comments)}</ul>
 
             <form class="film-details__new-comment" action="" method="get">
-              <div class="film-details__add-emoji-label"></div>
+              <div class="film-details__add-emoji-label">${getChosenEmojiImgElement(state.commentEmojiName)}</div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -210,9 +215,15 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
 
-    this._setState(FilmDetailsPopupView.parseFilmCommentsToState(filmComments));
-    console.log(this.#filmComments);
-    console.log(Object.values(this._state));
+    // this._setState(FilmDetailsPopupView.createNewCommentState());
+    this._setState({
+      commentEmojiName: null,
+      commentText: ''
+    });
+
+    // console.log(this.#filmComments);
+    // console.log(Object.values(this._state));
+    console.log(this._state);
 
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
@@ -220,10 +231,11 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivity);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmoji);
   }
 
   get template() {
-    return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments);
+    return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments, this._state);
   }
 
   #closeFilmDetailsPopupHandler = (evt) => {
@@ -249,6 +261,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       activityStatus: changedUserDetailValue
     });
 
+    // Удалить как неиспользуемый код
     changeElementActivityByClass({
       element: this.#filmCardButtonsElement.querySelector(`[data-id="${changedUserDetailId}"]`),
       className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
@@ -256,20 +269,33 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     });
   };
 
-<<<<<<< HEAD
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
     changeElementActivityByClass({
       element: this.element.querySelector(`#${changedUserDetailId}`),
       className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
       activityStatus: changedUserDetailValue
     });
-=======
-  static parseFilmCommentsToState(filmComments) {
-    return [ ...filmComments ];
   }
 
+  // Придумать другую функцию
   static parseStateToFilmComments(state) {
     return [ ...state ];
->>>>>>> 8627534 (Started work on state of popup)
+  }
+
+  #setCommentEmoji(evt) {
+    const emojiName = evt.target.id.replace('emoji-', '');
+
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    // Подставить эмоджи в стейт
+    this._setState({
+      commentEmojiName: emojiName
+    });
+
+    console.log(this._state);
+    // Перерисовать попап с учётом новых данных в стейт
+    // Не забыть про скрытый инпут
   }
 }
