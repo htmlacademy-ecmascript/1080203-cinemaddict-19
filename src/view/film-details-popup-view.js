@@ -215,23 +215,28 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
 
-    // this._setState(FilmDetailsPopupView.createNewCommentState());
     this._setState({
       commentEmojiName: null,
-      commentText: ''
+      commentText: '',
+      lastPopupScrollTop: 0
     });
-
-    // console.log(this.#filmComments);
-    // console.log(Object.values(this._state));
-    console.log(this._state);
 
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
     this.#filmCardButtonsElement = filmCardButtonsElement;
 
+    this._restoreHandlers();
+  }
+
+  #changeLastPopupScrollTopHandler = () => {
+    this._state.lastPopupScrollTop = this.element.scrollTop;
+  };
+
+  _restoreHandlers() {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivity);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmoji);
+    this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
   }
 
   get template() {
@@ -277,25 +282,34 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     });
   }
 
-  // Придумать другую функцию
-  static parseStateToFilmComments(state) {
-    return [ ...state ];
-  }
+  #changePopupScrollPosition = () => {
+    this.element.scrollTop = this._state.lastPopupScrollTop;
+  };
 
-  #setCommentEmoji(evt) {
+  #markInputAsSelected = () => {
+
+  };
+
+  #setCommentEmoji = (evt) => {
+    evt.preventDefault();
+    // evt.target.checked = true;
+    console.log(evt.target);
+    // console.log(evt.target.checked);
+
     const emojiName = evt.target.id.replace('emoji-', '');
 
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
 
-    // Подставить эмоджи в стейт
-    this._setState({
+    this.updateElement({
       commentEmojiName: emojiName
     });
 
-    console.log(this._state);
-    // Перерисовать попап с учётом новых данных в стейт
+    this.#changePopupScrollPosition();
+
     // Не забыть про скрытый инпут
-  }
+    evt.target.checked = true;
+    console.log(evt.target.checked);
+  };
 }
