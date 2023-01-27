@@ -14,7 +14,7 @@ export default class FilmDetailsPopupPresenter {
     this.#controlButtonsClickHandler = onControlButtonsClick;
   }
 
-  init(film, filmCardButtonsElement) {
+  init(film) {
     if (this.#filmDetailsPopup) {
       this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
     }
@@ -25,8 +25,7 @@ export default class FilmDetailsPopupPresenter {
       onCloseFilmDetailsPopup: (evt) => {
         this.#handleCloseFilmDetailsPopup(evt);
       },
-      onControlButtonsClick: this.#controlButtonsClickHandler,
-      filmCardButtonsElement
+      onControlButtonsClick: this.#controlButtonsClickHandler
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);

@@ -9,7 +9,7 @@ import {
 import {
   DATE_FORMAT_FULL,
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
-  ACTIVE_FILM_CARD_USER_DETAIL_CLASS
+  EMOJI_NAMES
 } from '../const.js';
 
 function getGenresListElements(genres) {
@@ -165,26 +165,58 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments, sta
               <div class="film-details__add-emoji-label">${getChosenEmojiImgElement(state.commentEmojiName)}</div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea
+                  class="film-details__comment-input"
+                  placeholder="Select reaction below and write comment here"
+                  name="comment"
+                ></textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+                <input
+                  class="film-details__emoji-item visually-hidden"
+                  name="comment-emoji"
+                  type="radio"
+                  id="emoji-smile"
+                  value="smile"
+                  ${state.commentEmojiName === EMOJI_NAMES.smile ? 'checked' : ''}
+                >
                 <label class="film-details__emoji-label" for="emoji-smile">
                   <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+                <input
+                  class="film-details__emoji-item visually-hidden"
+                  name="comment-emoji"
+                  type="radio"
+                  id="emoji-sleeping"
+                  value="sleeping"
+                  ${state.commentEmojiName === EMOJI_NAMES.sleeping ? 'checked' : ''}
+                >
                 <label class="film-details__emoji-label" for="emoji-sleeping">
                   <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+                <input
+                  class="film-details__emoji-item visually-hidden"
+                  name="comment-emoji"
+                  type="radio"
+                  id="emoji-puke"
+                  value="puke"
+                  ${state.commentEmojiName === EMOJI_NAMES.puke ? 'checked' : ''}
+                >
                 <label class="film-details__emoji-label" for="emoji-puke">
                   <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+                <input
+                  class="film-details__emoji-item visually-hidden"
+                  name="comment-emoji"
+                  type="radio"
+                  id="emoji-angry"
+                  value="angry"
+                  ${state.commentEmojiName === EMOJI_NAMES.angry ? 'checked' : ''}
+                >
                 <label class="film-details__emoji-label" for="emoji-angry">
                   <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                 </label>
@@ -202,14 +234,12 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmComments = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
-  #filmCardButtonsElement = null;
 
   constructor({
     filmDetails,
     filmComments,
     onCloseFilmDetailsPopup,
-    onControlButtonsClick,
-    filmCardButtonsElement
+    onControlButtonsClick
   }) {
     super();
     this.#filmDetails = filmDetails;
@@ -223,25 +253,36 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
-    this.#filmCardButtonsElement = filmCardButtonsElement;
 
     this._restoreHandlers();
-  }
-
-  #changeLastPopupScrollTopHandler = () => {
-    this._state.lastPopupScrollTop = this.element.scrollTop;
-  };
-
-  _restoreHandlers() {
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
-    this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivity);
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmoji);
-    this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
   }
 
   get template() {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments, this._state);
   }
+
+  changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
+    changeElementActivityByClass({
+      element: this.element.querySelector(`#${changedUserDetailId}`),
+      className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
+      activityStatus: changedUserDetailValue
+    });
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivityHandler);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmojiHandler);
+    this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
+  }
+
+  #changePopupScrollPosition = () => {
+    this.element.scrollTop = this._state.lastPopupScrollTop;
+  };
+
+  #changeLastPopupScrollTopHandler = () => {
+    this._state.lastPopupScrollTop = this.element.scrollTop;
+  };
 
   #closeFilmDetailsPopupHandler = (evt) => {
     evt.preventDefault();
@@ -251,7 +292,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#handleCloseFilmDetailsPopup(evt);
   };
 
-  #changeControllButtonsActivity = (evt) => {
+  #changeControllButtonsActivityHandler = (evt) => {
     evt.preventDefault();
 
     if (evt.target.tagName !== 'BUTTON') {
@@ -265,37 +306,9 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
       activityStatus: changedUserDetailValue
     });
-
-    // Удалить как неиспользуемый код
-    changeElementActivityByClass({
-      element: this.#filmCardButtonsElement.querySelector(`[data-id="${changedUserDetailId}"]`),
-      className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
-      activityStatus: changedUserDetailValue
-    });
   };
 
-  changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
-    changeElementActivityByClass({
-      element: this.element.querySelector(`#${changedUserDetailId}`),
-      className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
-      activityStatus: changedUserDetailValue
-    });
-  }
-
-  #changePopupScrollPosition = () => {
-    this.element.scrollTop = this._state.lastPopupScrollTop;
-  };
-
-  #markInputAsSelected = () => {
-
-  };
-
-  #setCommentEmoji = (evt) => {
-    evt.preventDefault();
-    // evt.target.checked = true;
-    console.log(evt.target);
-    // console.log(evt.target.checked);
-
+  #setCommentEmojiHandler = (evt) => {
     const emojiName = evt.target.id.replace('emoji-', '');
 
     if (evt.target.tagName !== 'INPUT') {
@@ -307,9 +320,5 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     });
 
     this.#changePopupScrollPosition();
-
-    // Не забыть про скрытый инпут
-    evt.target.checked = true;
-    console.log(evt.target.checked);
   };
 }
