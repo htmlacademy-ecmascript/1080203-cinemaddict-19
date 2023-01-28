@@ -22,8 +22,8 @@ export default class FilmCardsPresenter {
     for (let i = 0; i < Math.min(this.#films.length, this.#cardsCount); i++) {
       const filmCard = new FilmCardView({
         film: this.#films[i],
-        onFilmCardClick: (filmCardButtonsElement) => {
-          this.#filmDetailsPopup.init(this.#films[i], filmCardButtonsElement);
+        onFilmCardClick: () => {
+          this.#filmDetailsPopup.init(this.#films[i]);
         },
         onControlButtonsClick: this.#handleControlButtonsClick
       });

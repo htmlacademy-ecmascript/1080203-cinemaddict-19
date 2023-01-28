@@ -30,6 +30,13 @@ const ACTIVE_SORTING_ITEM_CLASS = 'sort__button--active';
 const ACTIVE_FILM_CARD_USER_DETAIL_CLASS = 'film-card__controls-item--active';
 const ACTIVE_FILM_POPUP_USER_DETAIL_CLASS = 'film-details__control-button--active';
 
+const EMOJI_NAMES = {
+  angry: 'angry',
+  puke: 'puke',
+  sleeping: 'sleeping',
+  smile: 'smile'
+};
+
 export {
   DATE_FORMAT_SHORT,
   DATE_FORMAT_FULL,
@@ -45,5 +52,6 @@ export {
   ACTIVE_SORTING_ITEM_CLASS,
   ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
-  USER_DETAILS_VALUES_BY_BTN_ID
+  USER_DETAILS_VALUES_BY_BTN_ID,
+  EMOJI_NAMES
 };
