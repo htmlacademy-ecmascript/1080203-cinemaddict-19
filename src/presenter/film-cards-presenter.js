@@ -9,9 +9,9 @@ export default class FilmCardsPresenter {
   #filmDetailsPopup = null;
   #handleControlButtonsClick = null;
 
-  constructor({ commentsModel, onControlButtonsClick }) {
+  constructor({ filmsModel, commentsModel, onControlButtonsClick }) {
     this.#handleControlButtonsClick = onControlButtonsClick;
-    this.#filmDetailsPopup = new FilmDetailsPopupPresenter({ commentsModel, onControlButtonsClick });
+    this.#filmDetailsPopup = new FilmDetailsPopupPresenter({ filmsModel, commentsModel, onControlButtonsClick });
   }
 
   init(films, filmsContainer, cardsCount) {

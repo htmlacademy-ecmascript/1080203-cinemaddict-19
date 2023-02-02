@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { ACTIVE_SORTING_ITEM_CLASS } from '../const.js';
 import {
-  isLinkElement,
   changeActiveLinkElementByClass,
-  getHashFromLinkElement
+  getHashFromLinkElement,
+  removeClassFromChildrenElements
 } from '../utils.js';
 
 function createSortingTemplate() {
@@ -26,7 +26,7 @@ export default class FilmsSortingView extends AbstractView {
 
     this.element.addEventListener('click', (evt) => {
       evt.preventDefault();
-      if (isLinkElement(evt.target)) {
+      if (evt.target.tagName === 'A') {
         changeActiveLinkElementByClass(this.element, evt.target, ACTIVE_SORTING_ITEM_CLASS);
 
         this.#handleFilmsSortingClick(getHashFromLinkElement(evt.target));
@@ -37,4 +37,10 @@ export default class FilmsSortingView extends AbstractView {
   get template() {
     return createSortingTemplate();
   }
+
+  resetActiveSortToDefault = () => {
+    removeClassFromChildrenElements(this.element, ACTIVE_SORTING_ITEM_CLASS);
+
+    this.element.querySelector('[href="#default"]').classList.add(ACTIVE_SORTING_ITEM_CLASS); // Добавить константу
+  };
 }

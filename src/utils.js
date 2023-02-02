@@ -86,10 +86,6 @@ function changeActiveLinkElementByClass(parentElement, linkElement, activeClass)
   addClassToElement(linkElement, activeClass);
 }
 
-function isLinkElement(element) {
-  return element.tagName === 'A';
-}
-
 function getHashFromLinkElement(linkElement) {
   return linkElement.hash.slice(1);
 }
@@ -118,6 +114,10 @@ function getDateObjectFromString(stringDate) {
 }
 
 function copyArrayAndLimitLength(array, min, max) {
+  if (!max) {
+    max = array.length;
+  }
+
   return array.slice(min, max + 1);
 }
 
@@ -143,11 +143,11 @@ export {
   isKeydownNotEscapeKey,
   clearChildElements,
   changeActiveLinkElementByClass,
-  isLinkElement,
   getHashFromLinkElement,
   copyArrayAndLimitLength,
   sortArrayByNestedObjectProperty,
   getDateObjectFromString,
   changeElementActivityByClass,
-  getObjectKeyByValue
+  getObjectKeyByValue,
+  removeClassFromChildrenElements
 };

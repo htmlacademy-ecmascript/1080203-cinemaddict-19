@@ -25,7 +25,7 @@ const USER_DETAILS_VALUES_BY_BTN_ID = {
   favorite: 'favorite'
 };
 
-const ACTIVE_NAV_ITEM_CLASS = 'main-navigation__item--active';
+const ACTIVE_FILTER_ITEM_CLASS = 'main-navigation__item--active';
 const ACTIVE_SORTING_ITEM_CLASS = 'sort__button--active';
 const ACTIVE_FILM_CARD_USER_DETAIL_CLASS = 'film-card__controls-item--active';
 const ACTIVE_FILM_POPUP_USER_DETAIL_CLASS = 'film-details__control-button--active';
@@ -35,6 +35,13 @@ const EMOJI_NAMES = {
   puke: 'puke',
   sleeping: 'sleeping',
   smile: 'smile'
+};
+
+const EMPTY_FILMS_LIST_MESSAGES = {
+  all: 'There are no movies in our database',
+  watchlist: 'There are no movies to watch now',
+  history: 'There are no watched movies now',
+  favorites: 'There are no favorite movies now'
 };
 
 export {
@@ -48,10 +55,11 @@ export {
   TOP_COMMENTED_FILMS_COUNT,
   ESCAPE_KEYCODE,
   FILM_FILTER_TYPES_BY_HASH,
-  ACTIVE_NAV_ITEM_CLASS,
+  ACTIVE_FILTER_ITEM_CLASS,
   ACTIVE_SORTING_ITEM_CLASS,
   ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
   USER_DETAILS_VALUES_BY_BTN_ID,
-  EMOJI_NAMES
+  EMOJI_NAMES,
+  EMPTY_FILMS_LIST_MESSAGES
 };

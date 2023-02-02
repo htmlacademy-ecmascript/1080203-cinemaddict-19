@@ -90,7 +90,7 @@ function getFilmCommentsListElements(comments) {
   return filmCommentsListElements.join('');
 }
 
-function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments, state) {
+function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
   return `
     <section class="film-details">
       <div class="film-details__inner">
@@ -157,9 +157,9 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, comments, sta
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${state.comments.length}</span></h3>
 
-            <ul class="film-details__comments-list">${getFilmCommentsListElements(comments)}</ul>
+            <ul class="film-details__comments-list">${getFilmCommentsListElements(state.comments)}</ul>
 
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label">${getChosenEmojiImgElement(state.commentEmojiName)}</div>
@@ -234,31 +234,36 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmComments = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
+  #handleCommentDelete = null;
 
   constructor({
     filmDetails,
     filmComments,
     onCloseFilmDetailsPopup,
-    onControlButtonsClick
+    onControlButtonsClick,
+    onCommentDeleteButtonClick
   }) {
     super();
     this.#filmDetails = filmDetails;
     this.#filmComments = filmComments;
 
     this._setState({
+      comments: filmComments,
       commentEmojiName: null,
       commentText: '',
-      lastPopupScrollTop: 0
+      lastPopupScrollTop: 0,
+      isDeleting: false
     });
 
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
+    this.#handleCommentDelete = onCommentDeleteButtonClick;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createFilmDetailsPopupTemplate(this.#filmDetails, this.#filmComments, this._state);
+    return createFilmDetailsPopupTemplate(this.#filmDetails, this._state);
   }
 
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
@@ -274,7 +279,35 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivityHandler);
     this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmojiHandler);
     this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#commentDeleteHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('change', console.log);
+    // todo Записать в стейт текст комментария, использовать debounce
   }
+
+  #commentDeleteHandler = (evt) => {
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+
+    this.#handleCommentDelete({
+      commentId: Number(evt.target.dataset.commentId),
+      filmId: this.#filmDetails.id
+    });
+
+    // Приходится помещать копию массива с комментами фильма в стейт и из него удалять
+    // В шаблон комментарии идут из стейта
+    // Наверное, это не очень красиво
+    this.#filmComments.find((comment, index, array) => {
+      if (comment.id === Number(evt.target.dataset.commentId)) {
+        array.splice(index, 1);
+        return array; // Без return не работает
+      }
+    });
+
+    this.updateElement({ comments: this.#filmComments });
+
+    this.#changePopupScrollPosition();
+  };
 
   #changePopupScrollPosition = () => {
     this.element.scrollTop = this._state.lastPopupScrollTop;
