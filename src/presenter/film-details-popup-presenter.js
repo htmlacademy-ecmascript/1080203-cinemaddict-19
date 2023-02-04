@@ -1,13 +1,13 @@
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import { render } from '../framework/render.js';
-import { isKeydownNotEscapeKey } from '../utils.js';
+import { isEscapeKey, isCtrlEnterKey, isFocusedOnTextarea } from '../utils.js';
+import { COMMENTS_ACTIONS } from '../const.js';
 
 export default class FilmDetailsPopupPresenter {
   #filmDetailsPopup = null;
   #pageBody = document.querySelector('body');
   #filmsModel = null;
   #commentsModel = null;
-  #filmComments = [];
   #controlButtonsClickHandler = null;
 
   constructor({ filmsModel, commentsModel, onControlButtonsClick }) {
@@ -15,7 +15,7 @@ export default class FilmDetailsPopupPresenter {
     this.#commentsModel = commentsModel;
     this.#controlButtonsClickHandler = onControlButtonsClick;
 
-    // todo Добавить notify на изменение модели комментов, использовать статусы create, delete
+    this.#commentsModel.addObserver(this.#updateComments);
   }
 
   init(film) {
@@ -25,55 +25,22 @@ export default class FilmDetailsPopupPresenter {
 
     this.#filmDetailsPopup = new FilmDetailsPopupView({
       filmDetails: film,
-      filmComments: this.#getCommentsByIds(this.#commentsModel.getComments(), film.comments),
+      filmsModel: this.#filmsModel,
+      commentsModel: this.#commentsModel,
       onCloseFilmDetailsPopup: this.#handleCloseFilmDetailsPopup,
       onControlButtonsClick: this.#controlButtonsClickHandler,
-      onCommentDeleteButtonClick: this.#handleCommentDelete
+      onCommentUpdate: this.#handleCommentUpdate
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);
 
-    document.addEventListener('keydown', this.#handleCloseFilmDetailsPopup);
-    document.addEventListener('keydown', this.#handleSaveNewFilmComment); // todo не забыть удалить
+    document.addEventListener('keydown', this.#keydownHandler);
 
     this.#pageBody.classList.add('hide-overflow');
   }
 
-  #removeFilmDetailsPopup(parentElement, childElement) {
-    parentElement.removeChild(childElement);
-    parentElement.classList.remove('hide-overflow');
-    this.#filmComments.length = 0;
-    this.#filmDetailsPopup = null;
-  }
-
-  #getCommentsByIds(comments, ids) {
-    comments.forEach((comment) => {
-      if (ids.includes(comment.id)) {
-        this.#filmComments.push(comment);
-      }
-    });
-
-    return this.#filmComments;
-  }
-
-  #handleCloseFilmDetailsPopup = (evt) => {
-    evt.preventDefault();
-
-    if (isKeydownNotEscapeKey(evt)) {
-      return;
-    }
-
-    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
-
-    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
-  };
-
-  #handleSaveNewFilmComment = (evt) => {
-    console.log(evt);
-  };
-
   remove() {
-    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+    document.removeEventListener('keydown', this.#keydownHandler);
 
     this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
   }
@@ -84,8 +51,44 @@ export default class FilmDetailsPopupPresenter {
     }
   }
 
-  #handleCommentDelete = ({ commentId, filmId }) => {
-    this.#filmsModel.deleteComment({ commentId, filmId });
-    this.#commentsModel.deleteComment({ commentId });
+  // todo Передаётся action, который нигде не используется во view, что с ним делть?
+  #updateComments = (action, updatedComments) => {
+    this.#filmDetailsPopup.updateComments({ action, updatedComments });
+  };
+
+  #removeFilmDetailsPopup(parentElement, childElement) {
+    parentElement.removeChild(childElement);
+    parentElement.classList.remove('hide-overflow');
+    this.#filmDetailsPopup = null;
+  }
+
+  #handleCommentUpdate = (commentData) => {
+    if (commentData.action === COMMENTS_ACTIONS.CREATE && (!commentData.commentEmojiName || !commentData.commentText)) {
+      return;
+    }
+
+    this.#filmsModel.updateComments(commentData);
+    this.#commentsModel.updateComments(commentData);
+  };
+
+  #handleSaveNewFilmComment = () => {
+    this.#handleCommentUpdate({
+      action: COMMENTS_ACTIONS.CREATE,
+      ...this.#filmDetailsPopup.getNewCommentData()
+    });
+  };
+
+  #handleCloseFilmDetailsPopup = () => {
+    document.removeEventListener('keydown', this.#keydownHandler);
+
+    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
+  };
+
+  #keydownHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      this.#handleCloseFilmDetailsPopup();
+    } else if (isCtrlEnterKey(evt) && isFocusedOnTextarea(evt, 'film-details__comment-input')) { // todo Надо ли получить класс из view?
+      this.#handleSaveNewFilmComment();
+    }
   };
 }

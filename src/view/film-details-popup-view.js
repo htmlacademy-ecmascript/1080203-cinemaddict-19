@@ -1,4 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import he from 'he';
+import { customAlphabet } from 'nanoid';
 import {
   getStringFromArray,
   humanizeDate,
@@ -9,8 +11,12 @@ import {
 import {
   DATE_FORMAT_FULL,
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
-  EMOJI_NAMES
+  EMOJI_NAMES,
+  COMMENTS_ACTIONS,
+  UPDATING_COMMENT_DELAY
 } from '../const.js';
+
+const nanoid = customAlphabet('1234567890', 10);
 
 function getGenresListElements(genres) {
   const genresList = [];
@@ -69,18 +75,19 @@ function getDetailsControlButtonsListElements({ watchlist, alreadyWatched, favor
 
 function getFilmCommentsListElements(comments) {
   const filmCommentsListElements = [];
-  comments.forEach((comment) => {
+
+  comments.forEach(({ emotion, comment, author, date, id }) => {
     filmCommentsListElements.push(`
       <li class="film-details__comment">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
+          <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
         </span>
         <div>
-          <p class="film-details__comment-text">${comment.comment}</p>
+          <p class="film-details__comment-text">${he.encode(comment)}</p>
           <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${humanizeDate(comment.date, DATE_FORMAT_FULL, true)}</span>
-            <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${humanizeDate(date, DATE_FORMAT_FULL, true)}</span>
+            <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
           </p>
         </div>
       </li>
@@ -169,7 +176,7 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
                   class="film-details__comment-input"
                   placeholder="Select reaction below and write comment here"
                   name="comment"
-                ></textarea>
+                >${state.commentText}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -229,35 +236,47 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
   `;
 }
 
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
 export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
-  #filmComments = null;
+  #filmComments = [];
+  #filmsModel = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
-  #handleCommentDelete = null;
+  #handleCommentUpdate = null;
 
   constructor({
     filmDetails,
-    filmComments,
+    filmsModel,
+    commentsModel,
     onCloseFilmDetailsPopup,
     onControlButtonsClick,
-    onCommentDeleteButtonClick
+    onCommentUpdate
   }) {
     super();
+
     this.#filmDetails = filmDetails;
-    this.#filmComments = filmComments;
+    this.#filmsModel = filmsModel;
 
     this._setState({
-      comments: filmComments,
+      comments: this.#getCommentsByIds(commentsModel.getComments(), filmDetails.comments),
       commentEmojiName: null,
       commentText: '',
-      lastPopupScrollTop: 0,
-      isDeleting: false
+      lastPopupScrollTop: 0
     });
 
     this.#handleCloseFilmDetailsPopup = onCloseFilmDetailsPopup;
     this.#handleControlButtonsClick = onControlButtonsClick;
-    this.#handleCommentDelete = onCommentDeleteButtonClick;
+    this.#handleCommentUpdate = onCommentUpdate;
 
     this._restoreHandlers();
   }
@@ -265,6 +284,34 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   get template() {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this._state);
   }
+
+  _restoreHandlers() {
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
+    this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivityHandler);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmojiHandler);
+    this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#commentDeleteHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#saveCommentToStateHandler);
+  }
+
+  updateComments = ({ updatedComments }) => {
+    this.#filmDetails = this.#filmsModel.getFilmById(this.#filmDetails.id);
+    this.#filmComments = this.#getCommentsByIds(updatedComments, this.#filmDetails.comments);
+
+    this._state.commentEmojiName = null;
+    this._state.commentText = '';
+
+    this.updateElement({ comments: this.#filmComments });
+
+    this.#changePopupScrollPosition();
+  };
+
+  getNewCommentData = () => ({
+    filmId: this.#filmDetails.id,
+    id: Number(nanoid()),
+    commentEmojiName: this._state.commentEmojiName,
+    commentText: this._state.commentText
+  });
 
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
     changeElementActivityByClass({
@@ -274,43 +321,42 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     });
   }
 
-  _restoreHandlers() {
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
-    this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivityHandler);
-    this.element.querySelector('.film-details__emoji-list').addEventListener('click', this.#setCommentEmojiHandler);
-    this.element.addEventListener('scroll', this.#changeLastPopupScrollTopHandler);
-    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#commentDeleteHandler);
-    this.element.querySelector('.film-details__comment-input').addEventListener('change', console.log);
-    // todo Записать в стейт текст комментария, использовать debounce
+  #getCommentsByIds(comments, ids) {
+    const filmComments = [];
+
+    comments.forEach((comment) => {
+      if (ids.includes(comment.id)) {
+        filmComments.push(comment);
+      }
+    });
+
+    return filmComments;
   }
+
+  #saveCommentToState = (evt) => {
+    this._state.commentText = evt.target.value;
+  };
+
+  #debouncedSaveCommentToState = debounce(this.#saveCommentToState, UPDATING_COMMENT_DELAY);
+
+  #changePopupScrollPosition = () => {
+    this.element.scrollTop = this._state.lastPopupScrollTop;
+  };
+
+  #saveCommentToStateHandler = (evt) => {
+    this.#debouncedSaveCommentToState(evt);
+  };
 
   #commentDeleteHandler = (evt) => {
     if (evt.target.tagName !== 'BUTTON') {
       return;
     }
 
-    this.#handleCommentDelete({
-      commentId: Number(evt.target.dataset.commentId),
-      filmId: this.#filmDetails.id
+    this.#handleCommentUpdate({
+      action: COMMENTS_ACTIONS.DELETE,
+      filmId: this.#filmDetails.id,
+      commentId: Number(evt.target.dataset.commentId)
     });
-
-    // Приходится помещать копию массива с комментами фильма в стейт и из него удалять
-    // В шаблон комментарии идут из стейта
-    // Наверное, это не очень красиво
-    this.#filmComments.find((comment, index, array) => {
-      if (comment.id === Number(evt.target.dataset.commentId)) {
-        array.splice(index, 1);
-        return array; // Без return не работает
-      }
-    });
-
-    this.updateElement({ comments: this.#filmComments });
-
-    this.#changePopupScrollPosition();
-  };
-
-  #changePopupScrollPosition = () => {
-    this.element.scrollTop = this._state.lastPopupScrollTop;
   };
 
   #changeLastPopupScrollTopHandler = () => {

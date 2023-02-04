@@ -90,11 +90,6 @@ export default class FilmCardView extends AbstractView {
     return createFilmCardTemplate(this.#film);
   }
 
-  #filmCardClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFilmCardClick(this.element.querySelector('.film-card__controls'));
-  };
-
   #changeControllButtonsActivity = (evt) => {
     evt.preventDefault();
 
@@ -109,5 +104,10 @@ export default class FilmCardView extends AbstractView {
       className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
       activityStatus: changedUserDetailValue
     });
+  };
+
+  #filmCardClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFilmCardClick(this.element.querySelector('.film-card__controls'));
   };
 }

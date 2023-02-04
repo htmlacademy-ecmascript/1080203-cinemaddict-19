@@ -1,7 +1,8 @@
 import Observable from '../framework/observable.js';
+import { FILMS_FILTER_HASHES } from '../const.js';
 
 export default class FilmsFilterModel extends Observable {
-  #currentFilter = 'all'; // Поменять all на константу
+  #currentFilter = FILMS_FILTER_HASHES.ALL;
 
   constructor() {
     super();
@@ -9,7 +10,6 @@ export default class FilmsFilterModel extends Observable {
 
   getCurrentFilter = () => this.#currentFilter;
 
-  // Пробовал использовать set filter, получал ошибку
   setCurrentFilter = (newFilterHash) => {
     this.#currentFilter = newFilterHash;
 

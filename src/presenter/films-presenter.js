@@ -33,7 +33,6 @@ export default class FilmsPresenter {
   #filmsFilterModel = null;
   #filmsSortingName = null;
   #filmCards = null;
-  // #filmsFilterPresenter = null;
   #filmsSortingPresenter = new FilmsSortingPresenter();
   #filmsListEmptyView = new FilmsListEmptyView();
   #currentFilmFilter = null;
@@ -41,11 +40,11 @@ export default class FilmsPresenter {
   constructor({filmsContainer, filmsModel, commentsModel, filtersModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
-    this.#films = [...this.#filmsModel.getFilms('all', 'default')]; // Добавить константы
+    this.#films = [...this.#filmsModel.getFilms()];
     this.#filmsFilterModel = filtersModel;
     this.#filmCards = new FilmCardsPresenter({
-      commentsModel,
       filmsModel,
+      commentsModel,
       onControlButtonsClick: this.#controlButtonsClickHandler
     });
     this.#filmsListShowMoreBtn = new FilmsListShowMoreBtnPresenter({
@@ -57,6 +56,40 @@ export default class FilmsPresenter {
     this.#filmsFilterModel.addObserver(this.#changeCurrentFilmsFilter);
     this.#filmsFilterModel.addObserver(this.#resetFilmsSorting);
     this.#filmsFilterModel.addObserver(this.#renderFilteredAndSortedFilmCards);
+  }
+
+  init() {
+    if (!this.#films.length) {
+      this.#filmsListEmptyView.init({
+        filmsListContainer: this.#filmsContainer,
+        currentFilmFilter: this.#currentFilmFilter
+      });
+      return;
+    }
+
+    this.#filmsSortingPresenter.init({
+      onFilmsSortingClick: this.#sortedFilmCardsHandler,
+      mainElement: this.#mainElement
+    });
+
+    render(this.#filmsComponent, this.#filmsContainer);
+
+    render(this.#filmsListComponent, this.#filmsComponent.element);
+    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
+    this.#filmCards.init(this.#films, this.#filmsListContainerComponent.element, FILMS_COUNT_PER_STEP);
+
+    this.#filmsListShowMoreBtn.init({
+      renderedFilmCardsCount: this.#renderedFilmCardsCount,
+      films: this.#films
+    });
+
+    render(this.#filmsListTopRatedComponent, this.#filmsComponent.element);
+    render(this.#filmsListTopRatedContainerComponent, this.#filmsListTopRatedComponent.element);
+    this.#filmCards.init(this.#films, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
+
+    render(this.#filmsListTopCommentedComponent, this.#filmsComponent.element);
+    render(this.#filmsListTopCommentedContainerComponent, this.#filmsListTopCommentedComponent.element);
+    this.#filmCards.init(this.#films, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
   }
 
   #changeCurrentFilmsFilter = () => (this.#currentFilmFilter = this.#filmsFilterModel.getCurrentFilter());
@@ -112,45 +145,13 @@ export default class FilmsPresenter {
 
     this.#filmCards.changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue });
 
-    this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
+    this.#renderedFilmCardsCount = this.#filmsListShowMoreBtn.renderedFilmCardsCount;
+
+    this.#renderFilteredAndSortedFilmCards();
 
     return {
       changedUserDetailId,
       changedUserDetailValue
     };
   };
-
-  init() {
-    if (!this.#films.length) {
-      this.#filmsListEmptyView.init({
-        filmsListContainer: this.#filmsContainer,
-        currentFilmFilter: this.#currentFilmFilter
-      });
-      return;
-    }
-
-    this.#filmsSortingPresenter.init({
-      onFilmsSortingClick: this.#sortedFilmCardsHandler,
-      mainElement: this.#mainElement
-    });
-
-    render(this.#filmsComponent, this.#filmsContainer);
-
-    render(this.#filmsListComponent, this.#filmsComponent.element);
-    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
-    this.#filmCards.init(this.#films, this.#filmsListContainerComponent.element, FILMS_COUNT_PER_STEP);
-
-    this.#filmsListShowMoreBtn.init({
-      renderedFilmCardsCount: this.#renderedFilmCardsCount,
-      films: this.#films
-    });
-
-    render(this.#filmsListTopRatedComponent, this.#filmsComponent.element);
-    render(this.#filmsListTopRatedContainerComponent, this.#filmsListTopRatedComponent.element);
-    this.#filmCards.init(this.#films, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
-
-    render(this.#filmsListTopCommentedComponent, this.#filmsComponent.element);
-    render(this.#filmsListTopCommentedContainerComponent, this.#filmsListTopCommentedComponent.element);
-    this.#filmCards.init(this.#films, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
-  }
 }

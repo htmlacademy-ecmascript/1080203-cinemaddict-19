@@ -58,14 +58,6 @@ export default class FilmsFilterView extends AbstractView {
     });
   }
 
-  #countFilmsByFilter() {
-    this.#films = this.#filmsFilterPresenter.getFilms();
-
-    return Object.keys(FILM_FILTER_TYPES_BY_HASH).reduce((acc, hash) => ({
-      ...acc, [hash]: this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[hash]]).length
-    }), {});
-  }
-
   get template() {
     return createFilterTemplate(this.#countFilmsByFilter());
   }
@@ -76,5 +68,13 @@ export default class FilmsFilterView extends AbstractView {
     const filterLink = Array.from(this.element.children).find((link) => link.href.includes(filterHash));
 
     filterLink.querySelector('span').innerText = newCountFilmsByFilter[filterHash];
+  }
+
+  #countFilmsByFilter() {
+    this.#films = this.#filmsFilterPresenter.getFilms();
+
+    return Object.keys(FILM_FILTER_TYPES_BY_HASH).reduce((acc, hash) => ({
+      ...acc, [hash]: this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[hash]]).length
+    }), {});
   }
 }

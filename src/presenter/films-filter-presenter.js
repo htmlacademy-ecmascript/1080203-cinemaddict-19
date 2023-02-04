@@ -26,11 +26,11 @@ export default class FilmsFilterPresenter {
     return this.#filmsModel.getFilms();
   }
 
-  #filmsFilterClickHandler = (filterHash) => {
-    this.#filmsFilterModel.setCurrentFilter(filterHash);
-  };
-
   #changeFilmCountByControlButtonId = (controlButtonId) => {
     this.#filmsFilterView.changeFilmCountByControlButtonId(controlButtonId);
+  };
+
+  #filmsFilterClickHandler = (filterHash) => {
+    this.#filmsFilterModel.setCurrentFilter(filterHash);
   };
 }

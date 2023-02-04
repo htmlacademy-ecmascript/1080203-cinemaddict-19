@@ -3,7 +3,10 @@ import { filmsMock } from '../mock/films-mock.js';
 import {
   FILMS_COUNT,
   FILM_FILTER_TYPES_BY_HASH,
-  USER_DETAILS_VALUES_BY_BTN_ID
+  USER_DETAILS_VALUES_BY_BTN_ID,
+  COMMENTS_ACTIONS,
+  FILMS_SORTING_HASHES,
+  FILMS_FILTER_HASHES
 } from '../const.js';
 import {
   copyArrayAndLimitLength,
@@ -19,7 +22,7 @@ export default class FilmsModel extends Observable {
     super();
   }
 
-  getFilms = (filterName = 'all', sortingName = 'default') => {
+  getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
     this.#films = copyArrayAndLimitLength(filmsMock, 0, FILMS_COUNT);
 
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
@@ -29,12 +32,12 @@ export default class FilmsModel extends Observable {
     }
 
     switch (sortingName) {
-      case 'default':
+      case FILMS_SORTING_HASHES.DEFAULT:
         break;
-      case 'date':
+      case FILMS_SORTING_HASHES.DATE:
         sortArrayByNestedObjectProperty(this.#filteredAndSortedFilms, 'filmInfo.release.date', true, getDateObjectFromString);
         break;
-      case 'rating':
+      case FILMS_SORTING_HASHES.RATING:
         sortArrayByNestedObjectProperty(this.#filteredAndSortedFilms, 'filmInfo.totalRating', true);
         break;
     }
@@ -53,19 +56,36 @@ export default class FilmsModel extends Observable {
 
   getFilmById = (filmId) => this.#films.find((film) => (film.id === filmId));
 
-  // todo Удалить, не нужна
-  deleteComment = ({ commentId, filmId }) => {
+  updateComments = (commentData) => {
+    switch (commentData.action) {
+      case COMMENTS_ACTIONS.CREATE:
+        this.#addComment(commentData);
+        break;
+
+      case COMMENTS_ACTIONS.DELETE:
+        this.#deleteComment(commentData);
+        break;
+    }
+  };
+
+  #deleteComment = ({ commentId, filmId }) => {
     this.#films.find((film) => {
-      if (filmId === film.id) {
-        film.comments.find((filmCommentId, index, array) => {
-          if (filmCommentId === commentId) {
-            array.splice(index, 1);
+      if (film.id === filmId) {
+        film.comments.find((comment, index) => {
+          if (comment === commentId) {
+            film.comments.splice(index, 1);
           }
         });
       }
     });
   };
 
-
+  #addComment = ({ id, filmId }) => {
+    this.#films.find((film) => {
+      if (film.id === filmId) {
+        film.comments.push(id);
+      }
+    });
+  };
 }
 

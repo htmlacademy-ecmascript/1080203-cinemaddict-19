@@ -9,7 +9,7 @@ export default class FilmCardsPresenter {
   #filmDetailsPopup = null;
   #handleControlButtonsClick = null;
 
-  constructor({ filmsModel, commentsModel, onControlButtonsClick }) {
+  constructor({ filmsModel,commentsModel, onControlButtonsClick }) {
     this.#handleControlButtonsClick = onControlButtonsClick;
     this.#filmDetailsPopup = new FilmDetailsPopupPresenter({ filmsModel, commentsModel, onControlButtonsClick });
   }

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
-import { DAYJS_DURATION_FORMAT, ESCAPE_KEYCODE } from './const';
+import { DAYJS_DURATION_FORMAT } from './const';
 
 function humanizeDate(date, format, fromNow) {
   dayjs.extend(relativeTime);
@@ -58,8 +58,16 @@ function getSingularOrPluralForm(formsArray, itemsQuantity) {
   return formsArray[formIndex];
 }
 
-function isKeydownNotEscapeKey(evt) {
-  return evt.type === 'keydown' && evt.keyCode !== ESCAPE_KEYCODE;
+function isEscapeKey(evt) {
+  return evt.type === 'keydown' && evt.key === 'Escape';
+}
+
+function isCtrlEnterKey(evt) {
+  return evt.key === 'Enter' && (evt.metaKey || evt.ctrlKey);
+}
+
+function isFocusedOnTextarea(evt, className) {
+  return evt.type === 'keydown' && evt.target.classList.contains(className);
 }
 
 function clearChildElements(parentElement) {
@@ -140,7 +148,9 @@ export {
   getStringFromArray,
   limitTextLength,
   getSingularOrPluralForm,
-  isKeydownNotEscapeKey,
+  isEscapeKey,
+  isCtrlEnterKey,
+  isFocusedOnTextarea,
   clearChildElements,
   changeActiveLinkElementByClass,
   getHashFromLinkElement,
