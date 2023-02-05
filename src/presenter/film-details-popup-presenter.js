@@ -1,17 +1,21 @@
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import { render } from '../framework/render.js';
-import { isKeydownNotEscapeKey } from '../utils.js';
+import { isEscapeKey, isCtrlEnterKey } from '../utils.js';
+import { COMMENTS_ACTIONS } from '../const.js';
 
 export default class FilmDetailsPopupPresenter {
   #filmDetailsPopup = null;
   #pageBody = document.querySelector('body');
+  #filmsModel = null;
   #commentsModel = null;
-  #filmComments = [];
   #controlButtonsClickHandler = null;
 
-  constructor({ commentsModel, onControlButtonsClick }) {
+  constructor({ filmsModel, commentsModel, onControlButtonsClick }) {
+    this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#controlButtonsClickHandler = onControlButtonsClick;
+
+    this.#commentsModel.addObserver(this.#updateComments);
   }
 
   init(film) {
@@ -21,51 +25,22 @@ export default class FilmDetailsPopupPresenter {
 
     this.#filmDetailsPopup = new FilmDetailsPopupView({
       filmDetails: film,
-      filmComments: this.#getCommentsByIds(this.#commentsModel.comments, film.comments),
-      onCloseFilmDetailsPopup: (evt) => {
-        this.#handleCloseFilmDetailsPopup(evt);
-      },
-      onControlButtonsClick: this.#controlButtonsClickHandler
+      filmsModel: this.#filmsModel,
+      commentsModel: this.#commentsModel,
+      onCloseFilmDetailsPopup: this.#handleCloseFilmDetailsPopup,
+      onControlButtonsClick: this.#controlButtonsClickHandler,
+      onCommentUpdate: this.#handleCommentUpdate
     });
 
     render(this.#filmDetailsPopup, this.#pageBody);
 
-    document.addEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+    document.addEventListener('keydown', this.#keydownHandler);
 
     this.#pageBody.classList.add('hide-overflow');
   }
 
-  #removeFilmDetailsPopup(parentElement, childElement) {
-    parentElement.removeChild(childElement);
-    parentElement.classList.remove('hide-overflow');
-    this.#filmComments.length = 0;
-    this.#filmDetailsPopup = null;
-  }
-
-  #getCommentsByIds(comments, ids) {
-    comments.forEach((comment) => {
-      if (ids.includes(comment.id)) {
-        this.#filmComments.push(comment);
-      }
-    });
-
-    return this.#filmComments;
-  }
-
-  #handleCloseFilmDetailsPopup = (evt) => {
-    evt.preventDefault();
-
-    if (isKeydownNotEscapeKey(evt)) {
-      return;
-    }
-
-    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
-
-    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
-  };
-
   remove() {
-    document.removeEventListener('keydown', this.#handleCloseFilmDetailsPopup);
+    document.removeEventListener('keydown', this.#keydownHandler);
 
     this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
   }
@@ -75,4 +50,41 @@ export default class FilmDetailsPopupPresenter {
       this.#filmDetailsPopup.changePopupControlButtonsActivity(userDetail);
     }
   }
+
+  #updateComments = (action, updatedComments) => {
+    this.#filmDetailsPopup.updateComments({ action, updatedComments });
+  };
+
+  #removeFilmDetailsPopup(parentElement, childElement) {
+    parentElement.removeChild(childElement);
+    parentElement.classList.remove('hide-overflow');
+    this.#filmDetailsPopup = null;
+  }
+
+  #handleCommentUpdate = (action, commentData) => {
+    if (action === COMMENTS_ACTIONS.CREATE && (!commentData.commentEmojiName || !commentData.commentText)) {
+      return;
+    }
+
+    this.#filmsModel.updateFilm(action, commentData);
+    this.#commentsModel.updateComments(action, commentData);
+  };
+
+  #handleSaveNewFilmComment = () => {
+    this.#handleCommentUpdate(COMMENTS_ACTIONS.CREATE, this.#filmDetailsPopup.newCommentData);
+  };
+
+  #handleCloseFilmDetailsPopup = () => {
+    document.removeEventListener('keydown', this.#keydownHandler);
+
+    this.#removeFilmDetailsPopup(this.#pageBody, this.#filmDetailsPopup.element);
+  };
+
+  #keydownHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      this.#handleCloseFilmDetailsPopup();
+    } else if (isCtrlEnterKey(evt)) {
+      this.#handleSaveNewFilmComment();
+    }
+  };
 }

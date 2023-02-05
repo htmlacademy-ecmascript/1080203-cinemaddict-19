@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
-import { DAYJS_DURATION_FORMAT, ESCAPE_KEYCODE } from './const';
+import { DAYJS_DURATION_FORMAT } from './const';
 
 function humanizeDate(date, format, fromNow) {
   dayjs.extend(relativeTime);
@@ -58,8 +58,12 @@ function getSingularOrPluralForm(formsArray, itemsQuantity) {
   return formsArray[formIndex];
 }
 
-function isKeydownNotEscapeKey(evt) {
-  return evt.type === 'keydown' && evt.keyCode !== ESCAPE_KEYCODE;
+function isEscapeKey(evt) {
+  return evt.type === 'keydown' && evt.key === 'Escape';
+}
+
+function isCtrlEnterKey(evt) {
+  return evt.key === 'Enter' && (evt.metaKey || evt.ctrlKey);
 }
 
 function clearChildElements(parentElement) {
@@ -84,10 +88,6 @@ function removeClassFromChildrenElements(parentElement, className) {
 function changeActiveLinkElementByClass(parentElement, linkElement, activeClass) {
   removeClassFromChildrenElements(parentElement, activeClass);
   addClassToElement(linkElement, activeClass);
-}
-
-function isLinkElement(element) {
-  return element.tagName === 'A';
 }
 
 function getHashFromLinkElement(linkElement) {
@@ -118,6 +118,10 @@ function getDateObjectFromString(stringDate) {
 }
 
 function copyArrayAndLimitLength(array, min, max) {
+  if (!max) {
+    max = array.length;
+  }
+
   return array.slice(min, max + 1);
 }
 
@@ -133,6 +137,16 @@ function getObjectKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
 export {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
@@ -140,14 +154,16 @@ export {
   getStringFromArray,
   limitTextLength,
   getSingularOrPluralForm,
-  isKeydownNotEscapeKey,
+  isEscapeKey,
+  isCtrlEnterKey,
   clearChildElements,
   changeActiveLinkElementByClass,
-  isLinkElement,
   getHashFromLinkElement,
   copyArrayAndLimitLength,
   sortArrayByNestedObjectProperty,
   getDateObjectFromString,
   changeElementActivityByClass,
-  getObjectKeyByValue
+  getObjectKeyByValue,
+  removeClassFromChildrenElements,
+  debounce
 };
