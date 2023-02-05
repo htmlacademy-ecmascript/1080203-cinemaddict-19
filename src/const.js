@@ -42,7 +42,6 @@ const ACTIVE_FILTER_ITEM_CLASS = 'main-navigation__item--active';
 const ACTIVE_SORTING_ITEM_CLASS = 'sort__button--active';
 const ACTIVE_FILM_CARD_USER_DETAIL_CLASS = 'film-card__controls-item--active';
 const ACTIVE_FILM_POPUP_USER_DETAIL_CLASS = 'film-details__control-button--active';
-const POPUP_COMMENT_TEXTAREA_CLASS = 'film-details__comment-input';
 
 const EMOJI_NAMES = {
   angry: 'angry',
@@ -93,7 +92,6 @@ export {
   FILMS_SORTING_HASHES,
   FILMS_FILTER_HASHES,
   UPDATING_COMMENT_DELAY,
-  POPUP_COMMENT_TEXTAREA_CLASS,
   FILM_FILTER_ELEMENTS,
   FILM_SORTING_ELEMENTS
 };

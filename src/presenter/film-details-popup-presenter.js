@@ -1,7 +1,7 @@
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import { render } from '../framework/render.js';
-import { isEscapeKey, isCtrlEnterKey, isFocusedOnTextarea } from '../utils.js';
-import { COMMENTS_ACTIONS, POPUP_COMMENT_TEXTAREA_CLASS } from '../const.js';
+import { isEscapeKey, isCtrlEnterKey } from '../utils.js';
+import { COMMENTS_ACTIONS } from '../const.js';
 
 export default class FilmDetailsPopupPresenter {
   #filmDetailsPopup = null;
@@ -51,7 +51,6 @@ export default class FilmDetailsPopupPresenter {
     }
   }
 
-  // todo Передаётся action, который нигде не используется во view, что с ним делть?
   #updateComments = (action, updatedComments) => {
     this.#filmDetailsPopup.updateComments({ action, updatedComments });
   };
@@ -84,7 +83,7 @@ export default class FilmDetailsPopupPresenter {
   #keydownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       this.#handleCloseFilmDetailsPopup();
-    } else if (isCtrlEnterKey(evt) && isFocusedOnTextarea(evt, POPUP_COMMENT_TEXTAREA_CLASS)) {
+    } else if (isCtrlEnterKey(evt)) {
       this.#handleSaveNewFilmComment();
     }
   };

@@ -339,7 +339,10 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       return;
     }
 
-    this.#handleCommentUpdate(COMMENTS_ACTIONS.DELETE, { commentId: Number(evt.target.dataset.commentId) });
+    this.#handleCommentUpdate(COMMENTS_ACTIONS.DELETE, {
+      commentId: Number(evt.target.dataset.commentId),
+      filmId: this.#filmDetails.id
+    });
   };
 
   #changeLastPopupScrollTopHandler = () => {

@@ -27,6 +27,7 @@ export default class FilmsPresenter {
   #mainElement = document.querySelector('.main');
   #filmsContainer = null;
   #filmsModel = null;
+  #commentsModel = null;
   #films = null;
   #filmsListShowMoreBtn = null;
   #renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
@@ -40,6 +41,7 @@ export default class FilmsPresenter {
   constructor({filmsContainer, filmsModel, commentsModel, filtersModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
     this.#films = [...this.#filmsModel.getFilms()];
     this.#filmsFilterModel = filtersModel;
     this.#filmCards = new FilmCardsPresenter({
@@ -56,6 +58,7 @@ export default class FilmsPresenter {
     this.#filmsFilterModel.addObserver(this.#changeCurrentFilmsFilter);
     this.#filmsFilterModel.addObserver(this.#resetFilmsSorting);
     this.#filmsFilterModel.addObserver(this.#renderFilteredAndSortedFilmCards);
+    this.#commentsModel.addObserver(this.#renderFilteredAndSortedFilmCards);
   }
 
   init() {

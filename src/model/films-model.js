@@ -61,6 +61,9 @@ export default class FilmsModel extends Observable {
       case COMMENTS_ACTIONS.CREATE:
         this.#addFilmComment(commentData);
         break;
+      case COMMENTS_ACTIONS.DELETE:
+        this.#deleteFilmComment(commentData);
+        break;
     }
   };
 
@@ -68,6 +71,18 @@ export default class FilmsModel extends Observable {
     this.#films.find((film) => {
       if (film.id === filmId) {
         film.comments.push(commentId);
+      }
+    });
+  };
+
+  #deleteFilmComment = ({ filmId, commentId }) => {
+    this.#films.find((film) => {
+      if (filmId === film.id) {
+        film.comments.find((filmCommentId, index, array) => {
+          if (filmCommentId === commentId) {
+            array.splice(index, 1);
+          }
+        });
       }
     });
   };

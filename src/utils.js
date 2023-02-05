@@ -66,10 +66,6 @@ function isCtrlEnterKey(evt) {
   return evt.key === 'Enter' && (evt.metaKey || evt.ctrlKey);
 }
 
-function isFocusedOnTextarea(evt, className) {
-  return evt.type === 'keydown' && evt.target.classList.contains(className);
-}
-
 function clearChildElements(parentElement) {
   parentElement.replaceChildren();
 }
@@ -160,7 +156,6 @@ export {
   getSingularOrPluralForm,
   isEscapeKey,
   isCtrlEnterKey,
-  isFocusedOnTextarea,
   clearChildElements,
   changeActiveLinkElementByClass,
   getHashFromLinkElement,
