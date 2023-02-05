@@ -56,34 +56,18 @@ export default class FilmsModel extends Observable {
 
   getFilmById = (filmId) => this.#films.find((film) => (film.id === filmId));
 
-  updateComments = (commentData) => {
-    switch (commentData.action) {
+  updateFilm = (action, commentData) => {
+    switch (action) {
       case COMMENTS_ACTIONS.CREATE:
-        this.#addComment(commentData);
-        break;
-
-      case COMMENTS_ACTIONS.DELETE:
-        this.#deleteComment(commentData);
+        this.#addFilmComment(commentData);
         break;
     }
   };
 
-  #deleteComment = ({ commentId, filmId }) => {
+  #addFilmComment = ({ filmId, commentId }) => {
     this.#films.find((film) => {
       if (film.id === filmId) {
-        film.comments.find((comment, index) => {
-          if (comment === commentId) {
-            film.comments.splice(index, 1);
-          }
-        });
-      }
-    });
-  };
-
-  #addComment = ({ id, filmId }) => {
-    this.#films.find((film) => {
-      if (film.id === filmId) {
-        film.comments.push(id);
+        film.comments.push(commentId);
       }
     });
   };

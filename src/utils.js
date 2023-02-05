@@ -141,6 +141,16 @@ function getObjectKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
 export {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
@@ -159,5 +169,6 @@ export {
   getDateObjectFromString,
   changeElementActivityByClass,
   getObjectKeyByValue,
-  removeClassFromChildrenElements
+  removeClassFromChildrenElements,
+  debounce
 };

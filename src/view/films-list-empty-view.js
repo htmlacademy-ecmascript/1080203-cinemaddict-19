@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { render } from '../framework/render.js';
-import { EMPTY_FILMS_LIST_MESSAGES } from '../const.js';
+import { EMPTY_FILMS_LIST_MESSAGES, FILMS_FILTER_HASHES } from '../const.js';
 
 function createFilmsListEmptyTemplate(message) {
   return `
@@ -24,7 +24,7 @@ export default class FilmsListEmptyView extends AbstractView {
       this.removeElement();
     }
 
-    this.#filmsFilterLinkHash = currentFilmFilter ? currentFilmFilter : 'all';
+    this.#filmsFilterLinkHash = currentFilmFilter || FILMS_FILTER_HASHES.ALL;
 
     render(this, filmsListContainer);
   };

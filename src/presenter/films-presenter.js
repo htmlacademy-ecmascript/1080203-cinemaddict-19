@@ -101,9 +101,7 @@ export default class FilmsPresenter {
     this.#filmsSortingPresenter.resetActiveSortToDefault();
   };
 
-  #getFilteredAndSortedFilmsList = (filmsFilterName, filmsSortingName) => [
-    ...this.#filmsModel.getFilms(filmsFilterName, filmsSortingName)
-  ];
+  #getFilteredAndSortedFilmsList = (filmsFilterName, filmsSortingName) => this.#filmsModel.getFilms(filmsFilterName, filmsSortingName);
 
   #renderFilteredAndSortedFilmCards = () => {
     clearChildElements(this.#filmsListContainerComponent.element);

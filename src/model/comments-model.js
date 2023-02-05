@@ -8,40 +8,31 @@ export default class CommentsModel extends Observable {
 
   getComments = () => this.#comments;
 
-  updateComments = (commentData) => {
-    switch (commentData.action) {
+  updateComments = (action, commentData) => {
+    switch (action) {
       case COMMENTS_ACTIONS.CREATE:
-        this.#createComment({
-          id: commentData.id,
-          commentEmojiName: commentData.commentEmojiName,
-          commentText: commentData.commentText
-        });
+        this.#createComment(commentData);
         break;
 
       case COMMENTS_ACTIONS.DELETE:
-        this.#deleteComment(commentData.commentId);
+        this.#deleteComment(commentData);
         break;
     }
 
-    this._notify(commentData.action, this.#comments);
+    this._notify(action, this.#comments);
   };
 
-  #deleteComment = (commentId) => {
-    this.#comments.find((comment, index, array) => {
-      if (commentId === comment.id) {
-        array.splice(index, 1);
-        return array;
-      }
-    });
+  #deleteComment = ({ commentId }) => {
+    this.#comments = this.#comments.filter((comment) => commentId !== comment.id);
   };
 
-  #createComment = ({ id, commentEmojiName, commentText }) => {
+  #createComment = ({ commentId, commentText, commentEmojiName }) => {
     this.#comments.push({
-      'id': id,
-      'author': 'Random author',
-      'comment': commentText,
-      'date': '2019-05-11T16:12:32.554Z',
-      'emotion': commentEmojiName
+      id: commentId,
+      author: 'Random author',
+      comment: commentText,
+      date: '2019-05-11T16:12:32.554Z',
+      emotion: commentEmojiName
     });
   };
 }

@@ -1,7 +1,7 @@
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import { render } from '../framework/render.js';
 import { isEscapeKey, isCtrlEnterKey, isFocusedOnTextarea } from '../utils.js';
-import { COMMENTS_ACTIONS } from '../const.js';
+import { COMMENTS_ACTIONS, POPUP_COMMENT_TEXTAREA_CLASS } from '../const.js';
 
 export default class FilmDetailsPopupPresenter {
   #filmDetailsPopup = null;
@@ -62,20 +62,17 @@ export default class FilmDetailsPopupPresenter {
     this.#filmDetailsPopup = null;
   }
 
-  #handleCommentUpdate = (commentData) => {
-    if (commentData.action === COMMENTS_ACTIONS.CREATE && (!commentData.commentEmojiName || !commentData.commentText)) {
+  #handleCommentUpdate = (action, commentData) => {
+    if (action === COMMENTS_ACTIONS.CREATE && (!commentData.commentEmojiName || !commentData.commentText)) {
       return;
     }
 
-    this.#filmsModel.updateComments(commentData);
-    this.#commentsModel.updateComments(commentData);
+    this.#filmsModel.updateFilm(action, commentData);
+    this.#commentsModel.updateComments(action, commentData);
   };
 
   #handleSaveNewFilmComment = () => {
-    this.#handleCommentUpdate({
-      action: COMMENTS_ACTIONS.CREATE,
-      ...this.#filmDetailsPopup.getNewCommentData()
-    });
+    this.#handleCommentUpdate(COMMENTS_ACTIONS.CREATE, this.#filmDetailsPopup.newCommentData);
   };
 
   #handleCloseFilmDetailsPopup = () => {
@@ -87,7 +84,7 @@ export default class FilmDetailsPopupPresenter {
   #keydownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       this.#handleCloseFilmDetailsPopup();
-    } else if (isCtrlEnterKey(evt) && isFocusedOnTextarea(evt, 'film-details__comment-input')) { // todo Надо ли получить класс из view?
+    } else if (isCtrlEnterKey(evt) && isFocusedOnTextarea(evt, POPUP_COMMENT_TEXTAREA_CLASS)) {
       this.#handleSaveNewFilmComment();
     }
   };

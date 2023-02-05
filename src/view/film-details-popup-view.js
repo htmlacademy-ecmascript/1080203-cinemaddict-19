@@ -6,7 +6,8 @@ import {
   humanizeDate,
   convertMinutesToHoursAndMinutes,
   transformFirstSymbolToUpperCase,
-  changeElementActivityByClass
+  changeElementActivityByClass,
+  debounce
 } from '../utils.js';
 import {
   DATE_FORMAT_FULL,
@@ -236,16 +237,6 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
   `;
 }
 
-function debounce (callback, timeoutDelay = 500) {
-  let timeoutId;
-
-  return (...rest) => {
-    clearTimeout(timeoutId);
-
-    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
-  };
-}
-
 export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
   #filmComments = [];
@@ -285,6 +276,15 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this._state);
   }
 
+  get newCommentData() {
+    return {
+      filmId: this.#filmDetails.id,
+      commentId: Number(nanoid()),
+      commentEmojiName: this._state.commentEmojiName,
+      commentText: this._state.commentText
+    };
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeFilmDetailsPopupHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#changeControllButtonsActivityHandler);
@@ -306,13 +306,6 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#changePopupScrollPosition();
   };
 
-  getNewCommentData = () => ({
-    filmId: this.#filmDetails.id,
-    id: Number(nanoid()),
-    commentEmojiName: this._state.commentEmojiName,
-    commentText: this._state.commentText
-  });
-
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
     changeElementActivityByClass({
       element: this.element.querySelector(`#${changedUserDetailId}`),
@@ -333,30 +326,20 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     return filmComments;
   }
 
-  #saveCommentToState = (evt) => {
-    this._state.commentText = evt.target.value;
-  };
-
-  #debouncedSaveCommentToState = debounce(this.#saveCommentToState, UPDATING_COMMENT_DELAY);
-
   #changePopupScrollPosition = () => {
     this.element.scrollTop = this._state.lastPopupScrollTop;
   };
 
-  #saveCommentToStateHandler = (evt) => {
-    this.#debouncedSaveCommentToState(evt);
-  };
+  #saveCommentToStateHandler = debounce((evt) => {
+    this._state.commentText = evt.target.value;
+  }, UPDATING_COMMENT_DELAY);
 
   #commentDeleteHandler = (evt) => {
     if (evt.target.tagName !== 'BUTTON') {
       return;
     }
 
-    this.#handleCommentUpdate({
-      action: COMMENTS_ACTIONS.DELETE,
-      filmId: this.#filmDetails.id,
-      commentId: Number(evt.target.dataset.commentId)
-    });
+    this.#handleCommentUpdate(COMMENTS_ACTIONS.DELETE, { commentId: Number(evt.target.dataset.commentId) });
   };
 
   #changeLastPopupScrollTopHandler = () => {
