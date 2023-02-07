@@ -57,9 +57,16 @@ const EMPTY_FILMS_LIST_MESSAGES = {
   favorites: 'There are no favorite movies now'
 };
 
+const LOADING_MESSAGE = 'Loading...';
+
 const COMMENTS_ACTIONS = {
   CREATE: 'create',
   DELETE: 'delete'
+};
+
+const FILM_MODEL_ACTIONS = {
+  INIT: 'init',
+  CHANGE_USER_DETAILS: 'changeUserDetails'
 };
 
 const FILM_FILTER_ELEMENTS = {
@@ -93,5 +100,7 @@ export {
   FILMS_FILTER_HASHES,
   UPDATING_COMMENT_DELAY,
   FILM_FILTER_ELEMENTS,
-  FILM_SORTING_ELEMENTS
+  FILM_SORTING_ELEMENTS,
+  LOADING_MESSAGE,
+  FILM_MODEL_ACTIONS
 };

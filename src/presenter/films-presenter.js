@@ -7,13 +7,15 @@ import FilmsListTopCommentedView from '../view/films-list-top-commented-view.js'
 import FilmsListEmptyView from '../view/films-list-empty-view.js';
 import FilmCardsPresenter from './film-cards-presenter.js';
 import FilmsSortingPresenter from './films-sorting-presenter.js';
-import { render } from '../framework/render.js';
+import LoadingView from '../view/loading-view.js';
+import { render, remove } from '../framework/render.js';
 import { clearChildElements } from '../utils.js';
 import {
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
-  USER_DETAILS_VALUES_BY_BTN_ID
+  USER_DETAILS_VALUES_BY_BTN_ID,
+  FILM_MODEL_ACTIONS
 } from '../const.js';
 
 export default class FilmsPresenter {
@@ -37,12 +39,15 @@ export default class FilmsPresenter {
   #filmsSortingPresenter = new FilmsSortingPresenter();
   #filmsListEmptyView = new FilmsListEmptyView();
   #currentFilmFilter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
-  constructor({filmsContainer, filmsModel, commentsModel, filtersModel}) {
+  constructor({ filmsContainer, filmsModel, commentsModel, filtersModel }) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#films = [...this.#filmsModel.getFilms()];
+    // this.#films = [...this.#filmsModel.getFilms()]; // todo Удалить
+    this.#films = null;
     this.#filmsFilterModel = filtersModel;
     this.#filmCards = new FilmCardsPresenter({
       filmsModel,
@@ -59,9 +64,33 @@ export default class FilmsPresenter {
     this.#filmsFilterModel.addObserver(this.#resetFilmsSorting);
     this.#filmsFilterModel.addObserver(this.#renderFilteredAndSortedFilmCards);
     this.#commentsModel.addObserver(this.#renderFilteredAndSortedFilmCards);
+    this.#filmsModel.addObserver(this.#renderFilmBoard);
+  }
+
+  #renderFilmBoard = (action, films) => {
+    switch (action) {
+      case FILM_MODEL_ACTIONS.INIT:
+        this.#isLoading = !this.#isLoading;
+
+        remove(this.#loadingComponent);
+
+        this.#films = films;
+
+        this.init();
+        break;
+    }
+  };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#filmsContainer);
   }
 
   init() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.#films.length) {
       this.#filmsListEmptyView.init({
         filmsListContainer: this.#filmsContainer,

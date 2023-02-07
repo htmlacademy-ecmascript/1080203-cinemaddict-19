@@ -52,7 +52,11 @@ export default class FilmDetailsPopupPresenter {
   }
 
   #updateComments = (action, updatedComments) => {
-    this.#filmDetailsPopup.updateComments({ action, updatedComments });
+    switch (action) {
+      case 'update': // todo Заменить на константу COMMENTS_MODEL_ACTIONS.UPDATE
+        this.#filmDetailsPopup.updateComments({ action, updatedComments });
+        break;
+    }
   };
 
   #removeFilmDetailsPopup(parentElement, childElement) {

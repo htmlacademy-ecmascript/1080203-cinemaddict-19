@@ -241,6 +241,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
   #filmComments = [];
   #filmsModel = null;
+  #commentsModel = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
   #handleCommentUpdate = null;
@@ -257,9 +258,10 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
     this.#filmDetails = filmDetails;
     this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
 
     this._setState({
-      comments: this.#getCommentsByIds(commentsModel.getComments(), filmDetails.comments),
+      comments: this.#filmComments, // todo Создать функцию рендеринга комментов в дом
       commentEmojiName: null,
       commentText: '',
       lastPopupScrollTop: 0
@@ -270,7 +272,18 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#handleCommentUpdate = onCommentUpdate;
 
     this._restoreHandlers();
+
+    this.#commentsModel.getFilmComments(this.#filmDetails.id);
+    this.#commentsModel.addObserver(this.#handler);
   }
+
+  #handler = (action, filmComments) => { // todo Заменить название обработчика
+    switch (action) {
+      case 'init': // todo Заменить на константу COMMENTS_MODEL_ACTIONS
+        console.log(`filmId = ${this.#filmDetails.id}`, filmComments);
+        break;
+    }
+  };
 
   get template() {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this._state);

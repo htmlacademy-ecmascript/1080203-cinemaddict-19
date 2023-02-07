@@ -1,5 +1,6 @@
 import FilmsFilterView from '../view/films-filter-view.js';
 import { render } from '../framework/render.js';
+import { FILM_MODEL_ACTIONS } from '../const.js';
 
 export default class FilmsFilterPresenter {
   #filmsModel = null;
@@ -26,8 +27,12 @@ export default class FilmsFilterPresenter {
     return this.#filmsModel.getFilms();
   }
 
-  #changeFilmCountByControlButtonId = (controlButtonId) => {
-    this.#filmsFilterView.changeFilmCountByControlButtonId(controlButtonId);
+  #changeFilmCountByControlButtonId = (action, controlButtonId) => {
+    switch (action) {
+      case FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS:
+        this.#filmsFilterView.changeFilmCountByControlButtonId(controlButtonId);
+        break;
+    }
   };
 
   #filmsFilterClickHandler = (filterHash) => {
