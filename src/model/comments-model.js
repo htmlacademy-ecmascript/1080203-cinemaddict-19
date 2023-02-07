@@ -1,15 +1,7 @@
 import Observable from '../framework/observable.js';
-// import { commentsMock } from '../mock/comments-mock.js'; // todo Удалить везде
-// import { copyArrayAndLimitLength } from '../utils.js'; // todo Удалить везде
-import { COMMENTS_ACTIONS } from '../const.js';
-
-const COMMENTS_MODEL_ACTIONS = {
-  INIT: 'init',
-  UPDATE: 'update'
-};
+import { COMMENTS_ACTIONS, COMMENTS_MODEL_ACTIONS } from '../const.js';
 
 export default class CommentsModel extends Observable {
-  // #comments = copyArrayAndLimitLength(commentsMock, 0); // todo Удалить вместе с функцией
   #filmComments = [];
   #filmsApiService = null;
 
@@ -29,8 +21,6 @@ export default class CommentsModel extends Observable {
 
     this._notify(COMMENTS_MODEL_ACTIONS.INIT, this.#filmComments);
   }
-
-  getComments = () => this.#filmComments; // todo Удалить моковую функцию
 
   updateComments = (action, commentData) => {
     switch (action) {

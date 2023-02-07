@@ -1,26 +1,22 @@
 import ApiService from './framework/api-service.js';
-
-const METHODS = {
-  GET: 'GET',
-  PUT: 'PUT',
-};
+import { METHODS, API_URL } from './const.js';
 
 export default class FilmsApiService extends ApiService {
   get films() {
-    return this._load({ url: 'movies' }) // todo Заменить на константу
+    return this._load({ url: API_URL.MOVIES })
       .then(ApiService.parseResponse);
   }
 
   async getFilmComments(filmId) {
-    return this._load({ url: `comments/${filmId}` }) // todo Заменить на константу
+    return this._load({ url: `${API_URL.COMMENTS}/${filmId}` })
       .then(ApiService.parseResponse);
   }
 
   async updateFilm(film) {
     const response = await this._load({
-      url: `movies/${film.id}`, // todo Заменить на константу
+      url: `${API_URL.MOVIES}/${film.id}`,
       method: METHODS.PUT,
-      body: JSON.stringify(this.#adaptToServer(film)),
+      body: JSON.stringify(this.#adaptFilmToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -29,7 +25,7 @@ export default class FilmsApiService extends ApiService {
     return parsedResponse;
   }
 
-  #adaptToServer(film) {
+  #adaptFilmToServer(film) {
     const adaptedFilm = {
       ...film,
       'film_info': {
@@ -50,13 +46,13 @@ export default class FilmsApiService extends ApiService {
     };
 
     delete adaptedFilm.filmInfo;
-    delete adaptedFilm.filmInfo.ageRating;
-    delete adaptedFilm.filmInfo.alternativeTitle;
-    delete adaptedFilm.filmInfo.totalRating;
-    delete adaptedFilm.filmInfo.release.releaseCountry;
+    delete adaptedFilm['film_info'].ageRating;
+    delete adaptedFilm['film_info'].alternativeTitle;
+    delete adaptedFilm['film_info'].totalRating;
+    delete adaptedFilm['film_info'].release.releaseCountry;
     delete adaptedFilm.userDetails;
-    delete adaptedFilm.userDetails.alreadyWatched;
-    delete adaptedFilm.userDetails.watchingDate;
+    delete adaptedFilm['user_details'].alreadyWatched;
+    delete adaptedFilm['user_details'].watchingDate;
 
     return adaptedFilm;
   }

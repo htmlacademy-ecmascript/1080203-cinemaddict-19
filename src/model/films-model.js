@@ -1,7 +1,5 @@
 import Observable from '../framework/observable.js';
-// import { filmsMock } from '../mock/films-mock.js'; // todo Удалить вместе с файлом
 import {
-  // FILMS_COUNT, // todo Удалить и в const тоже
   FILM_FILTER_TYPES_BY_HASH,
   USER_DETAILS_VALUES_BY_BTN_ID,
   COMMENTS_ACTIONS,
@@ -10,7 +8,6 @@ import {
   FILM_MODEL_ACTIONS
 } from '../const.js';
 import {
-  // copyArrayAndLimitLength, // todo Удалить вместе с функцией в utils
   sortArrayByNestedObjectProperty,
   getDateObjectFromString
 } from '../utils.js';
@@ -38,8 +35,6 @@ export default class FilmsModel extends Observable {
   }
 
   getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
-    // this.#films = copyArrayAndLimitLength(filmsMock, 0, FILMS_COUNT); // todo Удалить вместе с функцией в utils
-
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
       this.#filteredAndSortedFilms = this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
     } else {
@@ -60,14 +55,20 @@ export default class FilmsModel extends Observable {
     return this.#filteredAndSortedFilms;
   };
 
-  changeControlButtonsActivity = (changedUserDetailId, filmId) => {
+  async changeControlButtonsActivity(changedUserDetailId, film) {
     const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
-    const currentFilm = this.#films.find((film) => (film.id === filmId));
 
-    currentFilm.userDetails[key] = !currentFilm.userDetails[key];
+    film.userDetails[key] = !film.userDetails[key];
+
+    try {
+      const updatedFilm = await this.#filmsApiService.updateFilm(film);
+      film = updatedFilm;
+    } catch(err) {
+      // todo Вывести что-нибудь?
+    }
 
     this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, changedUserDetailId);
-  };
+  }
 
   getFilmById = (filmId) => this.#films.find((film) => (film.id === filmId));
 

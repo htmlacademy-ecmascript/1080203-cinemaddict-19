@@ -7,10 +7,7 @@ import FilmsFilterModel from './model/filters-model.js';
 import FilmsFilterPresenter from './presenter/films-filter-presenter.js';
 import { render } from './framework/render.js';
 import FilmsApiService from './films-api-service.js';
-
-const AUTHORIZATION = 'Basic ytgr5466hy78fdsw'; // todo Перенести в константы
-const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict/'; // todo Перенести в константы
-
+import { AUTHORIZATION, END_POINT } from './const.js';
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');

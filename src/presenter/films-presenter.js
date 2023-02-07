@@ -46,7 +46,6 @@ export default class FilmsPresenter {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    // this.#films = [...this.#filmsModel.getFilms()]; // todo Удалить
     this.#films = null;
     this.#filmsFilterModel = filtersModel;
     this.#filmCards = new FilmCardsPresenter({
@@ -77,6 +76,9 @@ export default class FilmsPresenter {
         this.#films = films;
 
         this.init();
+        break;
+      case FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS:
+        this.#renderFilteredAndSortedFilmCards();
         break;
     }
   };
@@ -165,13 +167,13 @@ export default class FilmsPresenter {
     this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
   };
 
-  #controlButtonsClickHandler = (evt, filmId) => {
+  #controlButtonsClickHandler = (evt, film) => {
     const changedUserDetailId = evt.target.id || evt.target.dataset.id;
     const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
 
-    this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, filmId);
+    this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, film);
 
-    const changedUserDetailValue = this.#filmsModel.getFilmById(filmId).userDetails[key];
+    const changedUserDetailValue = this.#filmsModel.getFilmById(film.id).userDetails[key];
 
     this.#filmCards.changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue });
 

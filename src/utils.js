@@ -117,14 +117,6 @@ function getDateObjectFromString(stringDate) {
   return new Date(stringDate);
 }
 
-function copyArrayAndLimitLength(array, min, max) {
-  if (!max) {
-    max = array.length;
-  }
-
-  return array.slice(min, max + 1);
-}
-
 function changeElementActivityByClass({ element, className, activityStatus }) {
   if (activityStatus) {
     element.classList.add(className);
@@ -159,7 +151,6 @@ export {
   clearChildElements,
   changeActiveLinkElementByClass,
   getHashFromLinkElement,
-  copyArrayAndLimitLength,
   sortArrayByNestedObjectProperty,
   getDateObjectFromString,
   changeElementActivityByClass,

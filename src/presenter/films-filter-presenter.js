@@ -11,6 +11,7 @@ export default class FilmsFilterPresenter {
     this.#filmsModel = filmsModel;
     this.#filmsFilterModel = filtersModel;
 
+    this.#filmsModel.addObserver(this.#setFilmsCountsToFlter);
     this.#filmsModel.addObserver(this.#changeFilmCountByControlButtonId);
   }
 
@@ -26,6 +27,14 @@ export default class FilmsFilterPresenter {
   getFilms() {
     return this.#filmsModel.getFilms();
   }
+
+  #setFilmsCountsToFlter = (action) => {
+    switch (action) {
+      case FILM_MODEL_ACTIONS.INIT:
+        this.#filmsFilterView.insertFilmsCountsToFlter();
+        break;
+    }
+  };
 
   #changeFilmCountByControlButtonId = (action, controlButtonId) => {
     switch (action) {
