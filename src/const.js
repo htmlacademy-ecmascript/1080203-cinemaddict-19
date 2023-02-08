@@ -1,7 +1,6 @@
 const DATE_FORMAT_SHORT = 'YYYY';
 const DATE_FORMAT_FULL = 'DD MMMM YYYY';
 const COMMENT_FORMS = ['comment', 'comments'];
-const FILMS_COUNT = 13;
 const FILMS_COUNT_PER_STEP = 5;
 const TOP_RATED_FILMS_COUNT = 2;
 const TOP_COMMENTED_FILMS_COUNT = 2;
@@ -57,9 +56,16 @@ const EMPTY_FILMS_LIST_MESSAGES = {
   favorites: 'There are no favorite movies now'
 };
 
+const LOADING_MESSAGE = 'Loading...';
+
 const COMMENTS_ACTIONS = {
   CREATE: 'create',
   DELETE: 'delete'
+};
+
+const FILM_MODEL_ACTIONS = {
+  INIT: 'init',
+  CHANGE_USER_DETAILS: 'changeUserDetails'
 };
 
 const FILM_FILTER_ELEMENTS = {
@@ -71,11 +77,28 @@ const FILM_SORTING_ELEMENTS = {
   LINK: 'link'
 };
 
+const METHODS = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+const API_URL = {
+  MOVIES: 'movies',
+  COMMENTS: 'comments'
+};
+
+const AUTHORIZATION = 'Basic ytgr5466hy78fdsw';
+const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict/';
+
+const COMMENTS_MODEL_ACTIONS = {
+  INIT: 'init',
+  UPDATE: 'update'
+};
+
 export {
   DATE_FORMAT_SHORT,
   DATE_FORMAT_FULL,
   COMMENT_FORMS,
-  FILMS_COUNT,
   DAYJS_DURATION_FORMAT,
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
@@ -93,5 +116,12 @@ export {
   FILMS_FILTER_HASHES,
   UPDATING_COMMENT_DELAY,
   FILM_FILTER_ELEMENTS,
-  FILM_SORTING_ELEMENTS
+  FILM_SORTING_ELEMENTS,
+  LOADING_MESSAGE,
+  FILM_MODEL_ACTIONS,
+  METHODS,
+  API_URL,
+  AUTHORIZATION,
+  END_POINT,
+  COMMENTS_MODEL_ACTIONS
 };

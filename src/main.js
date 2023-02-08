@@ -6,12 +6,15 @@ import CommentsModel from './model/comments-model.js';
 import FilmsFilterModel from './model/filters-model.js';
 import FilmsFilterPresenter from './presenter/films-filter-presenter.js';
 import { render } from './framework/render.js';
+import FilmsApiService from './films-api-service.js';
+import { AUTHORIZATION, END_POINT } from './const.js';
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
-const filmsModel = new FilmsModel();
-const commentsModel = new CommentsModel();
+const filmsApiService = new FilmsApiService(END_POINT, AUTHORIZATION);
+const filmsModel = new FilmsModel({ filmsApiService });
+const commentsModel = new CommentsModel({ filmsApiService });
 const filtersModel = new FilmsFilterModel();
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: mainElement,
@@ -24,6 +27,8 @@ const filmsFilterPresenter = new FilmsFilterPresenter({ filtersModel, filmsModel
 render(new UserTitleView(), headerElement);
 
 filmsFilterPresenter.init({ mainElement, filmsFilterPresenter });
+
+filmsModel.init();
 
 filmsPresenter.init();
 

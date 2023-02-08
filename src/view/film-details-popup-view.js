@@ -14,7 +14,8 @@ import {
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
   EMOJI_NAMES,
   COMMENTS_ACTIONS,
-  UPDATING_COMMENT_DELAY
+  UPDATING_COMMENT_DELAY,
+  COMMENTS_MODEL_ACTIONS
 } from '../const.js';
 
 const nanoid = customAlphabet('1234567890', 10);
@@ -165,9 +166,9 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
 
         <div class="film-details__bottom-container">
           <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${state.comments.length}</span></h3>
+            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"></span></h3>
 
-            <ul class="film-details__comments-list">${getFilmCommentsListElements(state.comments)}</ul>
+            <ul class="film-details__comments-list"></ul>
 
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label">${getChosenEmojiImgElement(state.commentEmojiName)}</div>
@@ -241,6 +242,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
   #filmComments = [];
   #filmsModel = null;
+  #commentsModel = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
   #handleCommentUpdate = null;
@@ -257,9 +259,10 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
     this.#filmDetails = filmDetails;
     this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
 
     this._setState({
-      comments: this.#getCommentsByIds(commentsModel.getComments(), filmDetails.comments),
+      comments: this.#filmComments, // todo Удалить комменты из стейта (на следующем задании)
       commentEmojiName: null,
       commentText: '',
       lastPopupScrollTop: 0
@@ -270,7 +273,25 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#handleCommentUpdate = onCommentUpdate;
 
     this._restoreHandlers();
+
+    this.#commentsModel.getFilmComments(this.#filmDetails.id);
+    this.#commentsModel.addObserver(this.#renderFilmComments);
   }
+
+  #renderFilmComments = (action, filmComments) => {
+    const counterContainer = this.element.querySelector('.film-details__comments-count');
+    const commentsContainer = this.element.querySelector('.film-details__comments-list');
+
+    switch (action) {
+      case COMMENTS_MODEL_ACTIONS.INIT:
+        counterContainer.innerHTML = '';
+        counterContainer.innerHTML = filmComments.length;
+
+        commentsContainer.innerHTML = '';
+        commentsContainer.innerHTML = getFilmCommentsListElements(filmComments);
+        break;
+    }
+  };
 
   get template() {
     return createFilmDetailsPopupTemplate(this.#filmDetails, this._state);
@@ -364,7 +385,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       return;
     }
 
-    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#filmDetails.id);
+    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#filmDetails);
 
     changeElementActivityByClass({
       element: this.element.querySelector(`#${changedUserDetailId}`),

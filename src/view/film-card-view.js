@@ -97,7 +97,7 @@ export default class FilmCardView extends AbstractView {
       return;
     }
 
-    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#film.id);
+    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#film);
 
     changeElementActivityByClass({
       element: this.element.querySelector(`[data-id="${changedUserDetailId}"]`),

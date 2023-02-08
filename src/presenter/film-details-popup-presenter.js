@@ -1,7 +1,7 @@
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import { render } from '../framework/render.js';
 import { isEscapeKey, isCtrlEnterKey } from '../utils.js';
-import { COMMENTS_ACTIONS } from '../const.js';
+import { COMMENTS_ACTIONS, COMMENTS_MODEL_ACTIONS } from '../const.js';
 
 export default class FilmDetailsPopupPresenter {
   #filmDetailsPopup = null;
@@ -52,7 +52,11 @@ export default class FilmDetailsPopupPresenter {
   }
 
   #updateComments = (action, updatedComments) => {
-    this.#filmDetailsPopup.updateComments({ action, updatedComments });
+    switch (action) {
+      case COMMENTS_MODEL_ACTIONS.UPDATE:
+        this.#filmDetailsPopup.updateComments({ action, updatedComments });
+        break;
+    }
   };
 
   #removeFilmDetailsPopup(parentElement, childElement) {

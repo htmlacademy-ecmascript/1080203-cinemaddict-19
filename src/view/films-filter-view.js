@@ -3,7 +3,8 @@ import {
   FILM_FILTER_TYPES_BY_HASH,
   ACTIVE_FILTER_ITEM_CLASS,
   USER_DETAILS_VALUES_BY_BTN_ID,
-  FILM_FILTER_ELEMENTS
+  FILM_FILTER_ELEMENTS,
+  FILMS_FILTER_HASHES
 } from '../const.js';
 import {
   changeActiveLinkElementByClass,
@@ -11,7 +12,7 @@ import {
   getObjectKeyByValue
 } from '../utils.js';
 
-function createFilterTemplate(countFilmsByFilter) {
+function createFilterTemplate() {
   return `
     <nav class="main-navigation">
         <a href="#all" class="main-navigation__item main-navigation__item--active" data-element="${FILM_FILTER_ELEMENTS.LINK}">
@@ -20,19 +21,19 @@ function createFilterTemplate(countFilmsByFilter) {
         <a href="#watchlist" class="main-navigation__item" data-element="${FILM_FILTER_ELEMENTS.LINK}">
           Watchlist
           <span class="main-navigation__item-count" data-element="${FILM_FILTER_ELEMENTS.COUNTER}">
-            ${countFilmsByFilter.watchlist}
+            0
           </span>
         </a>
         <a href="#history" class="main-navigation__item" data-element="${FILM_FILTER_ELEMENTS.LINK}">
           History
           <span class="main-navigation__item-count" data-element="${FILM_FILTER_ELEMENTS.COUNTER}">
-            ${countFilmsByFilter.history}
+            0
           </span>
         </a>
         <a href="#favorites" class="main-navigation__item" data-element="${FILM_FILTER_ELEMENTS.LINK}">
           Favorites
           <span class="main-navigation__item-count" data-element="${FILM_FILTER_ELEMENTS.COUNTER}">
-            ${countFilmsByFilter.favorites}
+            0
           </span>
         </a>
     </nav>
@@ -69,7 +70,7 @@ export default class FilmsFilterView extends AbstractView {
   }
 
   get template() {
-    return createFilterTemplate(this.#countFilmsByFilter());
+    return createFilterTemplate();
   }
 
   changeFilmCountByControlButtonId(controlButtonId) {
@@ -80,11 +81,29 @@ export default class FilmsFilterView extends AbstractView {
     filterLink.querySelector('span').innerText = newCountFilmsByFilter[filterHash];
   }
 
-  #countFilmsByFilter() {
+  #setFilmCountByHash(filmsCounts, key) {
+    const filterLink = Array.from(this.element.children).find((link) => link.href.includes(key));
+
+    filterLink.querySelector('span').innerText = filmsCounts[key];
+  }
+
+  insertFilmsCountsToFlter = () => {
+    const filmsCounts = this.#countFilmsByFilter();
+
+    for (const hash in filmsCounts) {
+      if (hash === FILMS_FILTER_HASHES.ALL) {
+        continue;
+      }
+
+      this.#setFilmCountByHash(filmsCounts, hash);
+    }
+  };
+
+  #countFilmsByFilter = () => {
     this.#films = this.#filmsFilterPresenter.getFilms();
 
     return Object.keys(FILM_FILTER_TYPES_BY_HASH).reduce((acc, hash) => ({
       ...acc, [hash]: this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[hash]]).length
     }), {});
-  }
+  };
 }

@@ -1,30 +1,40 @@
 import Observable from '../framework/observable.js';
-import { filmsMock } from '../mock/films-mock.js';
 import {
-  FILMS_COUNT,
   FILM_FILTER_TYPES_BY_HASH,
   USER_DETAILS_VALUES_BY_BTN_ID,
   COMMENTS_ACTIONS,
   FILMS_SORTING_HASHES,
-  FILMS_FILTER_HASHES
+  FILMS_FILTER_HASHES,
+  FILM_MODEL_ACTIONS
 } from '../const.js';
 import {
-  copyArrayAndLimitLength,
   sortArrayByNestedObjectProperty,
   getDateObjectFromString
 } from '../utils.js';
 
 export default class FilmsModel extends Observable {
-  #films = null;
+  #films = [];
   #filteredAndSortedFilms = null;
+  #filmsApiService = null;
 
-  constructor() {
+  constructor({ filmsApiService }) {
     super();
+
+    this.#filmsApiService = filmsApiService;
+  }
+
+  async init() {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this.#adaptFilmToClient);
+    } catch(err) {
+      this.#films = [];
+    }
+
+    this._notify(FILM_MODEL_ACTIONS.INIT, this.#films);
   }
 
   getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
-    this.#films = copyArrayAndLimitLength(filmsMock, 0, FILMS_COUNT);
-
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
       this.#filteredAndSortedFilms = this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
     } else {
@@ -45,14 +55,20 @@ export default class FilmsModel extends Observable {
     return this.#filteredAndSortedFilms;
   };
 
-  changeControlButtonsActivity = (changedUserDetailId, filmId) => {
+  async changeControlButtonsActivity(changedUserDetailId, film) {
     const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
-    const currentFilm = this.#films.find((film) => (film.id === filmId));
 
-    currentFilm.userDetails[key] = !currentFilm.userDetails[key];
+    film.userDetails[key] = !film.userDetails[key];
 
-    this._notify(changedUserDetailId);
-  };
+    try {
+      const updatedFilm = await this.#filmsApiService.updateFilm(film);
+      film = updatedFilm;
+    } catch(err) {
+      // todo Вывести что-нибудь?
+    }
+
+    this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, changedUserDetailId);
+  }
 
   getFilmById = (filmId) => this.#films.find((film) => (film.id === filmId));
 
@@ -86,5 +102,37 @@ export default class FilmsModel extends Observable {
       }
     });
   };
+
+  #adaptFilmToClient(film) {
+    const adaptedFilm = {
+      ...film,
+      filmInfo: {
+        ...film['film_info'],
+        ageRating: film['film_info']['age_rating'],
+        alternativeTitle: film['film_info']['alternative_title'],
+        totalRating: film['film_info']['total_rating'],
+        release: {
+          ...film['film_info']['release'],
+          releaseCountry: film['film_info']['release']['release_country']
+        }
+      },
+      userDetails: {
+        ...film['user_details'],
+        alreadyWatched: film['user_details']['already_watched'],
+        watchingDate: film['user_details']['watching_date']
+      }
+    };
+
+    delete adaptedFilm['film_info'];
+    delete adaptedFilm.filmInfo['age_rating'];
+    delete adaptedFilm.filmInfo['alternative_title'];
+    delete adaptedFilm.filmInfo['total_rating'];
+    delete adaptedFilm.filmInfo.release['release_country'];
+    delete adaptedFilm['user_details'];
+    delete adaptedFilm.userDetails['already_watched'];
+    delete adaptedFilm.userDetails['watching_date'];
+
+    return adaptedFilm;
+  }
 }
 
