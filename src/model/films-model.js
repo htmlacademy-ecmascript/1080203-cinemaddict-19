@@ -34,7 +34,8 @@ export default class FilmsModel extends Observable {
   }
 
   getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
-    let filteredAndSortedFilms = this.#films.slice(0);
+    // let filteredAndSortedFilms = this.#films.slice(0);
+    let filteredAndSortedFilms = [...this.#films];
 
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
       filteredAndSortedFilms = filteredAndSortedFilms.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
