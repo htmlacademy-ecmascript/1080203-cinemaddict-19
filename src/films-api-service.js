@@ -16,7 +16,7 @@ export default class FilmsApiService extends ApiService {
     const response = await this._load({
       url: `${API_URL.MOVIES}/${film.id}`,
       method: METHODS.PUT,
-      body: JSON.stringify(this.#adaptFilmToServer(film)),
+      body: this.#adaptFilmToServer(film),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -54,6 +54,6 @@ export default class FilmsApiService extends ApiService {
     delete adaptedFilm['user_details'].alreadyWatched;
     delete adaptedFilm['user_details'].watchingDate;
 
-    return adaptedFilm;
+    return JSON.stringify(adaptedFilm);
   }
 }
