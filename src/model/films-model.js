@@ -14,7 +14,6 @@ import {
 
 export default class FilmsModel extends Observable {
   #films = [];
-  #filteredAndSortedFilms = null;
   #filmsApiService = null;
 
   constructor({ filmsApiService }) {
@@ -35,24 +34,25 @@ export default class FilmsModel extends Observable {
   }
 
   getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
+    // let filteredAndSortedFilms = this.#films.slice(0);
+    let filteredAndSortedFilms = [...this.#films];
+
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
-      this.#filteredAndSortedFilms = this.#films.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
-    } else {
-      this.#filteredAndSortedFilms = this.#films;
+      filteredAndSortedFilms = filteredAndSortedFilms.filter((film) => film.userDetails[FILM_FILTER_TYPES_BY_HASH[filterName]]);
     }
 
     switch (sortingName) {
       case FILMS_SORTING_HASHES.DEFAULT:
         break;
       case FILMS_SORTING_HASHES.DATE:
-        sortArrayByNestedObjectProperty(this.#filteredAndSortedFilms, 'filmInfo.release.date', true, getDateObjectFromString);
+        sortArrayByNestedObjectProperty(filteredAndSortedFilms, 'filmInfo.release.date', true, getDateObjectFromString);
         break;
       case FILMS_SORTING_HASHES.RATING:
-        sortArrayByNestedObjectProperty(this.#filteredAndSortedFilms, 'filmInfo.totalRating', true);
+        sortArrayByNestedObjectProperty(filteredAndSortedFilms, 'filmInfo.totalRating', true);
         break;
     }
 
-    return this.#filteredAndSortedFilms;
+    return filteredAndSortedFilms;
   };
 
   async changeControlButtonsActivity(changedUserDetailId, film) {
@@ -64,7 +64,7 @@ export default class FilmsModel extends Observable {
       const updatedFilm = await this.#filmsApiService.updateFilm(film);
       film = updatedFilm;
     } catch(err) {
-      // todo Вывести что-нибудь?
+      // Handle error
     }
 
     this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, changedUserDetailId);
