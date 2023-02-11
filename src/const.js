@@ -58,14 +58,17 @@ const EMPTY_FILMS_LIST_MESSAGES = {
 
 const LOADING_MESSAGE = 'Loading...';
 
-const COMMENTS_ACTIONS = {
+const COMMENTS_MODEL_ACTIONS = {
+  INIT: 'init',
+  UPDATE: 'update',
   CREATE: 'create',
   DELETE: 'delete'
 };
 
 const FILM_MODEL_ACTIONS = {
   INIT: 'init',
-  CHANGE_USER_DETAILS: 'changeUserDetails'
+  CHANGE_USER_DETAILS: 'changeUserDetails',
+  UPDATE: 'update'
 };
 
 const FILM_FILTER_ELEMENTS = {
@@ -80,6 +83,8 @@ const FILM_SORTING_ELEMENTS = {
 const METHODS = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 const API_URL = {
@@ -87,13 +92,13 @@ const API_URL = {
   COMMENTS: 'comments'
 };
 
-const AUTHORIZATION = 'Basic ytgr5466hy78fdsw';
-const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict/';
-
-const COMMENTS_MODEL_ACTIONS = {
-  INIT: 'init',
-  UPDATE: 'update'
+const DELETE_BUTTON_TEXT = {
+  STATIC: 'Delete',
+  LOADER: 'Deleting...'
 };
+
+const AUTHORIZATION = 'Basic ytgr5466hy78fdsw';
+const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
 export {
   DATE_FORMAT_SHORT,
@@ -111,7 +116,6 @@ export {
   USER_DETAILS_VALUES_BY_BTN_ID,
   EMOJI_NAMES,
   EMPTY_FILMS_LIST_MESSAGES,
-  COMMENTS_ACTIONS,
   FILMS_SORTING_HASHES,
   FILMS_FILTER_HASHES,
   UPDATING_COMMENT_DELAY,
@@ -123,5 +127,6 @@ export {
   API_URL,
   AUTHORIZATION,
   END_POINT,
-  COMMENTS_MODEL_ACTIONS
+  COMMENTS_MODEL_ACTIONS,
+  DELETE_BUTTON_TEXT
 };

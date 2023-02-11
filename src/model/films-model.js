@@ -2,7 +2,6 @@ import Observable from '../framework/observable.js';
 import {
   FILM_FILTER_TYPES_BY_HASH,
   USER_DETAILS_VALUES_BY_BTN_ID,
-  COMMENTS_ACTIONS,
   FILMS_SORTING_HASHES,
   FILMS_FILTER_HASHES,
   FILM_MODEL_ACTIONS
@@ -30,11 +29,10 @@ export default class FilmsModel extends Observable {
       this.#films = [];
     }
 
-    this._notify(FILM_MODEL_ACTIONS.INIT, this.#films);
+    this._notify(FILM_MODEL_ACTIONS.INIT, { films: this.#films });
   }
 
   getFilms = (filterName = FILMS_FILTER_HASHES.ALL, sortingName = FILMS_SORTING_HASHES.DEFAULT) => {
-    // let filteredAndSortedFilms = this.#films.slice(0);
     let filteredAndSortedFilms = [...this.#films];
 
     if (FILM_FILTER_TYPES_BY_HASH[filterName]) {
@@ -55,52 +53,30 @@ export default class FilmsModel extends Observable {
     return filteredAndSortedFilms;
   };
 
-  async changeControlButtonsActivity(changedUserDetailId, film) {
+  async changeControlButtonsActivity(changedUserDetailId, film, filmCard) {
     const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
+    let response = null;
 
     film.userDetails[key] = !film.userDetails[key];
 
     try {
-      const updatedFilm = await this.#filmsApiService.updateFilm(film);
-      film = updatedFilm;
+      response = this.#adaptFilmToClient(await this.#filmsApiService.updateFilm(film));
     } catch(err) {
-      // Handle error
+      // Error
     }
 
-    this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, changedUserDetailId);
+    this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, { controlButtonId: changedUserDetailId, response, filmCard });
   }
 
-  getFilmById = (filmId) => this.#films.find((film) => (film.id === filmId));
-
-  updateFilm = (action, commentData) => {
-    switch (action) {
-      case COMMENTS_ACTIONS.CREATE:
-        this.#addFilmComment(commentData);
-        break;
-      case COMMENTS_ACTIONS.DELETE:
-        this.#deleteFilmComment(commentData);
-        break;
+  updateFilmsList = async () => {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this.#adaptFilmToClient);
+    } catch(err) {
+      this.#films = [];
     }
-  };
 
-  #addFilmComment = ({ filmId, commentId }) => {
-    this.#films.find((film) => {
-      if (film.id === filmId) {
-        film.comments.push(commentId);
-      }
-    });
-  };
-
-  #deleteFilmComment = ({ filmId, commentId }) => {
-    this.#films.find((film) => {
-      if (filmId === film.id) {
-        film.comments.find((filmCommentId, index, array) => {
-          if (filmCommentId === commentId) {
-            array.splice(index, 1);
-          }
-        });
-      }
-    });
+    this._notify(FILM_MODEL_ACTIONS.UPDATE, { films: this.#films });
   };
 
   #adaptFilmToClient(film) {

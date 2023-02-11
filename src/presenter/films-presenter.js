@@ -14,7 +14,6 @@ import {
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
-  USER_DETAILS_VALUES_BY_BTN_ID,
   FILM_MODEL_ACTIONS
 } from '../const.js';
 
@@ -66,18 +65,27 @@ export default class FilmsPresenter {
     this.#filmsModel.addObserver(this.#renderFilmBoard);
   }
 
-  #renderFilmBoard = (action, films) => {
+  #renderFilmBoard = (action, data) => {
     switch (action) {
       case FILM_MODEL_ACTIONS.INIT:
         this.#isLoading = !this.#isLoading;
 
         remove(this.#loadingComponent);
 
-        this.#films = films;
+        this.#films = data.films;
 
         this.init();
         break;
       case FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS:
+        if (!data.response) {
+          return;
+        }
+
+        this.#renderFilteredAndSortedFilmCards();
+        break;
+      case FILM_MODEL_ACTIONS.UPDATE:
+        this.#films = data.films;
+
         this.#renderFilteredAndSortedFilmCards();
         break;
     }
@@ -164,26 +172,14 @@ export default class FilmsPresenter {
     this.#filmsSortingName = filmsSortingName;
     this.#renderedFilmCardsCount = this.#filmsListShowMoreBtn.renderedFilmCardsCount;
 
-    this.#renderFilteredAndSortedFilmCards(this.#renderedFilmCardsCount);
+    this.#renderFilteredAndSortedFilmCards();
   };
 
-  #controlButtonsClickHandler = (evt, film) => {
+  #controlButtonsClickHandler = (evt, film, filmCard) => {
     const changedUserDetailId = evt.target.id || evt.target.dataset.id;
-    const key = USER_DETAILS_VALUES_BY_BTN_ID[changedUserDetailId];
 
-    this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, film);
-
-    const changedUserDetailValue = this.#filmsModel.getFilmById(film.id).userDetails[key];
-
-    this.#filmCards.changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue });
+    this.#filmsModel.changeControlButtonsActivity(changedUserDetailId, film, filmCard);
 
     this.#renderedFilmCardsCount = this.#filmsListShowMoreBtn.renderedFilmCardsCount;
-
-    this.#renderFilteredAndSortedFilmCards();
-
-    return {
-      changedUserDetailId,
-      changedUserDetailValue
-    };
   };
 }

@@ -5,13 +5,13 @@ import {
   getStringFromArray,
   transformFirstSymbolToUpperCase,
   limitTextLength,
-  getSingularOrPluralForm,
-  changeElementActivityByClass
+  getSingularOrPluralForm
 } from '../utils.js';
 import {
   COMMENT_FORMS,
   DATE_FORMAT_SHORT,
-  ACTIVE_FILM_CARD_USER_DETAIL_CLASS
+  ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
+  FILM_MODEL_ACTIONS
 } from '../const.js';
 
 function createFilmCardTemplate({ filmInfo, comments, userDetails }) {
@@ -75,7 +75,7 @@ export default class FilmCardView extends AbstractView {
   #handleFilmCardClick = null;
   #handleControlButtonsClick = null;
 
-  constructor({ film, onFilmCardClick, onControlButtonsClick }) {
+  constructor({ film, onFilmCardClick, onControlButtonsClick, filmsModel }) {
     super();
 
     this.#film = film;
@@ -84,7 +84,20 @@ export default class FilmCardView extends AbstractView {
 
     this.element.querySelector('.film-card__link').addEventListener('click', this.#filmCardClickHandler);
     this.element.querySelector('.film-card__controls').addEventListener('click', this.#changeControllButtonsActivity);
+    filmsModel.addObserver(this.#shakeCard);
   }
+
+  #shakeCard = (action, payload) => {
+    if (payload.response || !payload.filmCard) {
+      return;
+    }
+
+    switch (action) {
+      case FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS:
+        payload.filmCard.shake();
+        break;
+    }
+  };
 
   get template() {
     return createFilmCardTemplate(this.#film);
@@ -97,13 +110,7 @@ export default class FilmCardView extends AbstractView {
       return;
     }
 
-    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#film);
-
-    changeElementActivityByClass({
-      element: this.element.querySelector(`[data-id="${changedUserDetailId}"]`),
-      className: ACTIVE_FILM_CARD_USER_DETAIL_CLASS,
-      activityStatus: changedUserDetailValue
-    });
+    this.#handleControlButtonsClick(evt, this.#film, this);
   };
 
   #filmCardClickHandler = (evt) => {
