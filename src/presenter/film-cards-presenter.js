@@ -8,10 +8,12 @@ export default class FilmCardsPresenter {
   #cardsCount = null;
   #filmDetailsPopup = null;
   #handleControlButtonsClick = null;
+  #filmsModel = null;
 
   constructor({ filmsModel, commentsModel, onControlButtonsClick }) {
     this.#handleControlButtonsClick = onControlButtonsClick;
     this.#filmDetailsPopup = new FilmDetailsPopupPresenter({ filmsModel, commentsModel, onControlButtonsClick });
+    this.#filmsModel = filmsModel;
   }
 
   init(films, filmsContainer, cardsCount) {
@@ -25,13 +27,11 @@ export default class FilmCardsPresenter {
         onFilmCardClick: () => {
           this.#filmDetailsPopup.init(this.#films[i]);
         },
-        onControlButtonsClick: this.#handleControlButtonsClick
+        onControlButtonsClick: this.#handleControlButtonsClick,
+        filmsModel: this.#filmsModel
       });
+
       render(filmCard, this.#filmsContainer);
     }
-  }
-
-  changePopupControlButtonsActivity(userDetail) {
-    this.#filmDetailsPopup.changePopupControlButtonsActivity(userDetail);
   }
 }

@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import he from 'he';
-import { customAlphabet } from 'nanoid';
 import {
   getStringFromArray,
   humanizeDate,
@@ -13,12 +12,10 @@ import {
   DATE_FORMAT_FULL,
   ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
   EMOJI_NAMES,
-  COMMENTS_ACTIONS,
   UPDATING_COMMENT_DELAY,
-  COMMENTS_MODEL_ACTIONS
+  COMMENTS_MODEL_ACTIONS,
+  DELETE_BUTTON_TEXT
 } from '../const.js';
-
-const nanoid = customAlphabet('1234567890', 10);
 
 function getGenresListElements(genres) {
   const genresList = [];
@@ -152,7 +149,7 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
                   <td class="film-details__cell">${filmInfo.release.releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Genres</td>
+                  <td class="film-details__term">${filmInfo.genre.length > 1 ? 'Genres' : 'Genre'}</td>
                   <td class="film-details__cell">${getStringFromArray(getGenresListElements(filmInfo.genre), '')}</td>
                 </tr>
               </table>
@@ -168,7 +165,7 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"></span></h3>
 
-            <ul class="film-details__comments-list"></ul>
+            <ul class="film-details__comments-list">${getFilmCommentsListElements(state.comments)}</ul>
 
             <form class="film-details__new-comment" action="" method="get">
               <div class="film-details__add-emoji-label">${getChosenEmojiImgElement(state.commentEmojiName)}</div>
@@ -241,15 +238,14 @@ function createFilmDetailsPopupTemplate({ filmInfo, userDetails }, state) {
 export default class FilmDetailsPopupView extends AbstractStatefulView {
   #filmDetails = null;
   #filmComments = [];
-  #filmsModel = null;
   #commentsModel = null;
   #handleCloseFilmDetailsPopup = null;
   #handleControlButtonsClick = null;
   #handleCommentUpdate = null;
+  #currentDeleteBtutton = null;
 
   constructor({
     filmDetails,
-    filmsModel,
     commentsModel,
     onCloseFilmDetailsPopup,
     onControlButtonsClick,
@@ -258,11 +254,10 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     super();
 
     this.#filmDetails = filmDetails;
-    this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
 
     this._setState({
-      comments: this.#filmComments, // todo Удалить комменты из стейта (на следующем задании)
+      comments: this.#filmComments,
       commentEmojiName: null,
       commentText: '',
       lastPopupScrollTop: 0
@@ -278,19 +273,58 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.#commentsModel.addObserver(this.#renderFilmComments);
   }
 
-  #renderFilmComments = (action, filmComments) => {
+  #enableDeleteButton = (button) => {
+    if (button) {
+      button.disabled = false;
+      button.textContent = DELETE_BUTTON_TEXT.STATIC;
+      button = null;
+    }
+  };
+
+  #disableDeleteButton = (button) => {
+    if (button) {
+      button.disabled = true;
+      button.textContent = DELETE_BUTTON_TEXT.LOADER;
+    }
+  };
+
+  #renderFilmComments = (action, payload) => {
+    if (!payload) {
+      this.#enableDeleteButton(this.#currentDeleteBtutton);
+      return;
+    }
+
     const counterContainer = this.element.querySelector('.film-details__comments-count');
     const commentsContainer = this.element.querySelector('.film-details__comments-list');
 
     switch (action) {
-      case COMMENTS_MODEL_ACTIONS.INIT:
-        counterContainer.innerHTML = '';
-        counterContainer.innerHTML = filmComments.length;
+      case COMMENTS_MODEL_ACTIONS.CREATE:
+        this.#filmComments = payload.comments;
 
-        commentsContainer.innerHTML = '';
-        commentsContainer.innerHTML = getFilmCommentsListElements(filmComments);
+        this.updateElement({
+          commentEmojiName: null,
+          commentText: ''
+        });
+
+        this.#changePopupScrollPosition();
+        break;
+
+      case COMMENTS_MODEL_ACTIONS.INIT:
+        this.#filmComments = payload;
+        break;
+
+      case COMMENTS_MODEL_ACTIONS.DELETE:
+        this.#filmComments = payload;
+        this.updateElement({ comments: payload });
+        this.#changePopupScrollPosition();
         break;
     }
+
+    counterContainer.innerHTML = '';
+    counterContainer.innerHTML = this.#filmComments.length;
+
+    commentsContainer.innerHTML = '';
+    commentsContainer.innerHTML = getFilmCommentsListElements(this.#filmComments); // Экранировано при выводе в шаблон
   };
 
   get template() {
@@ -300,7 +334,6 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   get newCommentData() {
     return {
       filmId: this.#filmDetails.id,
-      commentId: Number(nanoid()),
       commentEmojiName: this._state.commentEmojiName,
       commentText: this._state.commentText
     };
@@ -316,35 +349,20 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
   }
 
   updateComments = ({ updatedComments }) => {
-    this.#filmDetails = this.#filmsModel.getFilmById(this.#filmDetails.id);
-    this.#filmComments = this.#getCommentsByIds(updatedComments, this.#filmDetails.comments);
-
+    this._state.comments = updatedComments.comments;
     this._state.commentEmojiName = null;
     this._state.commentText = '';
-
-    this.updateElement({ comments: this.#filmComments });
 
     this.#changePopupScrollPosition();
   };
 
   changePopupControlButtonsActivity({ changedUserDetailId, changedUserDetailValue }) {
+
     changeElementActivityByClass({
       element: this.element.querySelector(`#${changedUserDetailId}`),
       className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
       activityStatus: changedUserDetailValue
     });
-  }
-
-  #getCommentsByIds(comments, ids) {
-    const filmComments = [];
-
-    comments.forEach((comment) => {
-      if (ids.includes(comment.id)) {
-        filmComments.push(comment);
-      }
-    });
-
-    return filmComments;
   }
 
   #changePopupScrollPosition = () => {
@@ -360,10 +378,13 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       return;
     }
 
-    this.#handleCommentUpdate(COMMENTS_ACTIONS.DELETE, {
-      commentId: Number(evt.target.dataset.commentId),
-      filmId: this.#filmDetails.id
-    });
+    this.#currentDeleteBtutton = evt.target;
+    this.#disableDeleteButton(this.#currentDeleteBtutton);
+
+    this.#handleCommentUpdate(
+      COMMENTS_MODEL_ACTIONS.DELETE,
+      { commentId: Number(evt.target.dataset.commentId), filmId: this.#filmDetails.id }
+    );
   };
 
   #changeLastPopupScrollTopHandler = () => {
@@ -385,13 +406,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       return;
     }
 
-    const { changedUserDetailId, changedUserDetailValue } = this.#handleControlButtonsClick(evt, this.#filmDetails);
-
-    changeElementActivityByClass({
-      element: this.element.querySelector(`#${changedUserDetailId}`),
-      className: ACTIVE_FILM_POPUP_USER_DETAIL_CLASS,
-      activityStatus: changedUserDetailValue
-    });
+    this.#handleControlButtonsClick(evt, this.#filmDetails);
   };
 
   #setCommentEmojiHandler = (evt) => {
@@ -404,6 +419,8 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.updateElement({
       commentEmojiName: emojiName
     });
+
+    this.#renderFilmComments(COMMENTS_MODEL_ACTIONS.INIT, this.#filmComments);
 
     this.#changePopupScrollPosition();
   };

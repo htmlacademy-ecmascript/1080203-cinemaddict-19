@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import { COMMENTS_ACTIONS, COMMENTS_MODEL_ACTIONS } from '../const.js';
+import { COMMENTS_MODEL_ACTIONS } from '../const.js';
 
 export default class CommentsModel extends Observable {
   #filmComments = [];
@@ -13,8 +13,7 @@ export default class CommentsModel extends Observable {
 
   async getFilmComments(filmId) {
     try {
-      const filmComments = await this.#filmsApiService.getFilmComments(filmId);
-      this.#filmComments = filmComments.map(this.#adaptCommentToClient);
+      this.#filmComments = await this.#filmsApiService.getFilmComments(filmId);
     } catch(err) {
       this.#filmComments = [];
     }
@@ -22,35 +21,46 @@ export default class CommentsModel extends Observable {
     this._notify(COMMENTS_MODEL_ACTIONS.INIT, this.#filmComments);
   }
 
-  updateComments = (action, commentData) => {
+  async updateComments(action, commentData) {
+    let response = null;
+    let status = null;
+
     switch (action) {
-      case COMMENTS_ACTIONS.CREATE:
-        this.#createComment(commentData);
+      case COMMENTS_MODEL_ACTIONS.CREATE:
+        response = await this.#createComment(commentData);
         break;
 
-      case COMMENTS_ACTIONS.DELETE:
-        this.#deleteComment(commentData);
+      case COMMENTS_MODEL_ACTIONS.DELETE:
+        status = await this.#deleteComment(commentData);
+
+        if (status) {
+          response = await this.#filmsApiService.getFilmComments(commentData.filmId);
+        }
         break;
     }
 
-    this._notify(COMMENTS_MODEL_ACTIONS.UPDATE, this.#filmComments);
-  };
+    this._notify(action, response);
+  }
 
-  #deleteComment = ({ commentId }) => {
-    this.#filmComments = this.#filmComments.filter((comment) => commentId !== comment.id);
-  };
+  async #deleteComment({ commentId }) {
+    try {
+      return await this.#filmsApiService.deleteComment({ commentId });
+    } catch (error) {
+      // Error
+    }
+  }
 
-  #createComment = ({ commentId, commentText, commentEmojiName }) => {
-    this.#filmComments.push({
-      id: commentId,
-      author: 'Random author',
-      comment: commentText,
-      date: '2019-05-11T16:12:32.554Z',
-      emotion: commentEmojiName
-    });
-  };
-
-  #adaptCommentToClient(comment) {
-    return comment;
+  async #createComment({ filmId, commentText, commentEmojiName }) {
+    try {
+      return await this.#filmsApiService.createComment({
+        comment: {
+          comment: commentText,
+          emotion: commentEmojiName
+        },
+        filmId
+      });
+    } catch (error) {
+      // Error
+    }
   }
 }

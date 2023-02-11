@@ -17,12 +17,35 @@ export default class FilmsApiService extends ApiService {
       url: `${API_URL.MOVIES}/${film.id}`,
       method: METHODS.PUT,
       body: this.#adaptFilmToServer(film),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: new Headers({'Content-Type': 'application/json'})
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  async createComment({ comment, filmId }) {
+    const response = await this._load({
+      url: `${API_URL.COMMENTS}/${filmId}`,
+      method: METHODS.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  async deleteComment({ commentId }) {
+    const response = await this._load({
+      url: `${API_URL.COMMENTS}/${commentId}`,
+      method: METHODS.DELETE,
+      headers: new Headers({ 'Content-Type': 'application/json' })
+    });
+
+    return response.ok;
   }
 
   #adaptFilmToServer(film) {
