@@ -24,9 +24,7 @@ export default class FilmsFilterPresenter {
     render(this.#filmsFilterView, mainElement);
   }
 
-  getFilms() {
-    return this.#filmsModel.getFilms();
-  }
+  getFilms = () => this.#filmsModel.getFilms();
 
   #setFilmsCountsToFlter = (action) => {
     switch (action) {
@@ -36,7 +34,11 @@ export default class FilmsFilterPresenter {
     }
   };
 
-  #changeFilmCountByControlButtonId = (action, controlButtonId) => {
+  #changeFilmCountByControlButtonId = (action, { controlButtonId, response }) => {
+    if (!response) {
+      return;
+    }
+
     switch (action) {
       case FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS:
         this.#filmsFilterView.changeFilmCountByControlButtonId(controlButtonId);
