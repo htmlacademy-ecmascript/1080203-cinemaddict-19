@@ -302,7 +302,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
         this.#filmComments = payload.comments;
 
         this.updateElement({
-          commentEmojiName: null,
+          commentEmojiName: '',
           commentText: ''
         });
 
