@@ -33,4 +33,4 @@ filmsModel.init();
 
 filmsPresenter.init();
 
-render(new FilmsStatisticView(), footerElement);
+render(new FilmsStatisticView({ getFilms: () => filmsModel.films() }), footerElement);

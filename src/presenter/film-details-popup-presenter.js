@@ -81,7 +81,7 @@ export default class FilmDetailsPopupPresenter {
 
   #updateComments = (action, updatedComments) => {
     if (!updatedComments) {
-      this.#uiBlocker.unblock();
+      // this.#uiBlocker.unblock();
       this.#filmDetailsPopup.shake();
       return;
     }
@@ -104,12 +104,12 @@ export default class FilmDetailsPopupPresenter {
       this.#filmDetailsPopup.shake();
       return;
     }
-    this.#uiBlocker.block();
+    // this.#uiBlocker.block();
 
     await this.#commentsModel.updateComments(action, commentData);
     await this.#filmsModel.updateFilmsList(action);
 
-    this.#uiBlocker.unblock();
+    // this.#uiBlocker.unblock();
   };
 
   #handleSaveNewFilmComment = () => {

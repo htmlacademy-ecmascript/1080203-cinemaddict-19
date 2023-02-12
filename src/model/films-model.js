@@ -72,6 +72,14 @@ export default class FilmsModel extends Observable {
 
     try {
       response = this.#adaptFilmToClient(await this.#filmsApiService.updateFilm(film));
+
+      if (response) {
+        this.#films.find((modelFilm) => {
+          if (modelFilm.id === film.id) {
+            modelFilm.userDetails[key] = response.userDetails[key];
+          }
+        });
+      }
     } catch(err) {
       // Error
     }

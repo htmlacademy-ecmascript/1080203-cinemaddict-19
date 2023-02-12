@@ -9,12 +9,15 @@ import FilmCardsPresenter from './film-cards-presenter.js';
 import FilmsSortingPresenter from './films-sorting-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import { render, remove } from '../framework/render.js';
-import { clearChildElements } from '../utils.js';
+import { clearChildElements, sortArrayByNestedObjectProperty } from '../utils.js';
 import {
   FILMS_COUNT_PER_STEP,
   TOP_RATED_FILMS_COUNT,
   TOP_COMMENTED_FILMS_COUNT,
-  FILM_MODEL_ACTIONS
+  FILM_MODEL_ACTIONS,
+  FILMS_SORTING_HASHES,
+  FILM_FILTER_TYPES_BY_HASH,
+  FILMS_FILTER_ACTIONS
 } from '../const.js';
 
 export default class FilmsPresenter {
@@ -62,6 +65,8 @@ export default class FilmsPresenter {
     this.#filmsFilterModel.addObserver(this.#resetFilmsSorting);
     this.#filmsFilterModel.addObserver(this.#renderFilteredAndSortedFilmCards);
     this.#commentsModel.addObserver(this.#renderFilteredAndSortedFilmCards);
+    this.#filmsModel.addObserver(this.#renderTopCommentedFilms);
+    this.#filmsModel.addObserver(this.#renderTopRatedFilms);
     this.#filmsModel.addObserver(this.#renderFilmBoard);
   }
 
@@ -82,6 +87,8 @@ export default class FilmsPresenter {
         }
 
         this.#renderFilteredAndSortedFilmCards();
+        this.#renderTopRatedFilms();
+        this.#renderTopCommentedFilms(action, data);
         break;
       case FILM_MODEL_ACTIONS.UPDATE:
         this.#films = data.films;
@@ -127,12 +134,64 @@ export default class FilmsPresenter {
 
     render(this.#filmsListTopRatedComponent, this.#filmsComponent.element);
     render(this.#filmsListTopRatedContainerComponent, this.#filmsListTopRatedComponent.element);
-    this.#filmCards.init(this.#films, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
 
     render(this.#filmsListTopCommentedComponent, this.#filmsComponent.element);
     render(this.#filmsListTopCommentedContainerComponent, this.#filmsListTopCommentedComponent.element);
-    this.#filmCards.init(this.#films, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
   }
+
+  #renderTopRatedFilms = () => {
+    // todo Сделать изменение кнопок по changeUserDetails
+
+    const sortedByRatingFilms = this.#getFilteredAndSortedFilmsList(FILM_FILTER_TYPES_BY_HASH.all, FILMS_SORTING_HASHES.RATING);
+    const isTopRatedEmpty = (films) => films.every((film) => film.filmInfo.totalRating === 0);
+
+    this.#filmsListTopRatedContainerComponent.element.innerHTML = '';
+
+    if (!isTopRatedEmpty(sortedByRatingFilms)) {
+      this.#filmCards.init(sortedByRatingFilms, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
+    }
+
+    // switch (action) {
+    //   case FILM_MODEL_ACTIONS.UPDATE:
+    //     this.#filmsListTopRatedContainerComponent.element.innerHTML = '';
+
+    //     if (!isTopRatedEmpty(sortedByRatingFilms)) {
+    //       this.#filmCards.init(sortedByRatingFilms, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
+    //     }
+    //     break;
+    //   case FILM_MODEL_ACTIONS.INIT:
+    //     if (!isTopRatedEmpty(sortedByRatingFilms)) {
+    //       this.#filmCards.init(sortedByRatingFilms, this.#filmsListTopRatedContainerComponent.element, TOP_RATED_FILMS_COUNT);
+    //     }
+    //     break;
+    // }
+  };
+
+  #renderTopCommentedFilms = (payload) => {
+    const sortedByCommentsFilms = this.#getSortedByCommentsFilms(payload.films);
+    const isTopCommentedEmpty = (films) => films.every((film) => film.comments.length === 0);
+
+    this.#filmsListTopCommentedContainerComponent.element.innerHTML = '';
+
+    if (!isTopCommentedEmpty(sortedByCommentsFilms)) {
+      this.#filmCards.init(sortedByCommentsFilms, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
+    }
+
+    // switch (action) {
+    //   case FILM_MODEL_ACTIONS.UPDATE:
+    //     this.#filmsListTopCommentedContainerComponent.element.innerHTML = '';
+
+    //     if (!isTopCommentedEmpty(sortedByCommentsFilms)) {
+    //       this.#filmCards.init(sortedByCommentsFilms, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
+    //     }
+    //     break;
+    //   case FILM_MODEL_ACTIONS.INIT:
+    //     if (!isTopCommentedEmpty(sortedByCommentsFilms)) {
+    //       this.#filmCards.init(sortedByCommentsFilms, this.#filmsListTopCommentedContainerComponent.element, TOP_COMMENTED_FILMS_COUNT);
+    //     }
+    //     break;
+    // }
+  };
 
   #changeCurrentFilmsFilter = () => (this.#currentFilmFilter = this.#filmsFilterModel.getCurrentFilter());
 
@@ -145,7 +204,25 @@ export default class FilmsPresenter {
 
   #getFilteredAndSortedFilmsList = (filmsFilterName, filmsSortingName) => this.#filmsModel.getFilms(filmsFilterName, filmsSortingName);
 
-  #renderFilteredAndSortedFilmCards = () => {
+  #getSortedByCommentsFilms = (films) => {
+    if (!films) {
+      films = this.#filmsModel.getFilms();
+    }
+
+    return sortArrayByNestedObjectProperty([...films], 'comments.length', true);
+  };
+
+  #renderFilteredAndSortedFilmCards = (action) => {
+    switch (action) {
+      case FILMS_FILTER_ACTIONS.CHANGE:
+        this.#renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
+        break;
+
+      default:
+        this.#renderedFilmCardsCount = this.#filmsListShowMoreBtn.renderedFilmCardsCount;
+        break;
+    }
+
     clearChildElements(this.#filmsListContainerComponent.element);
 
     this.#filmsListShowMoreBtn.remove();
@@ -155,7 +232,6 @@ export default class FilmsPresenter {
     if (this.#films.length) {
       this.#filmCards.init(this.#films, this.#filmsListContainerComponent.element, this.#renderedFilmCardsCount);
     } else {
-
       this.#filmsListEmptyView.init({
         filmsListContainer: this.#filmsListContainerComponent.element,
         currentFilmFilter: this.#currentFilmFilter
