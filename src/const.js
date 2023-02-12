@@ -103,6 +103,10 @@ const USER_TITLE = {
   MOVIE_BUFF: 'Movie Buff'
 };
 
+const FILMS_FILTER_ACTIONS = {
+  CHANGE: 'change'
+};
+
 const AUTHORIZATION = 'Basic ytgr5466hy78fdsw';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
@@ -135,5 +139,6 @@ export {
   END_POINT,
   COMMENTS_MODEL_ACTIONS,
   DELETE_BUTTON_TEXT,
-  USER_TITLE
+  USER_TITLE,
+  FILMS_FILTER_ACTIONS
 };

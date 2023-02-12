@@ -258,7 +258,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
     this._setState({
       comments: this.#filmComments,
-      commentEmojiName: null,
+      commentEmojiName: '',
       commentText: '',
       lastPopupScrollTop: 0
     });
@@ -294,9 +294,6 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
       return;
     }
 
-    const counterContainer = this.element.querySelector('.film-details__comments-count');
-    const commentsContainer = this.element.querySelector('.film-details__comments-list');
-
     switch (action) {
       case COMMENTS_MODEL_ACTIONS.CREATE:
         this.#filmComments = payload.comments;
@@ -320,10 +317,10 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
         break;
     }
 
-    counterContainer.innerHTML = '';
-    counterContainer.innerHTML = this.#filmComments.length;
+    const counterContainer = this.element.querySelector('.film-details__comments-count');
+    const commentsContainer = this.element.querySelector('.film-details__comments-list');
 
-    commentsContainer.innerHTML = '';
+    counterContainer.textContent = this.#filmComments.length;
     commentsContainer.innerHTML = getFilmCommentsListElements(this.#filmComments); // Экранировано при выводе в шаблон
   };
 
@@ -350,7 +347,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
 
   updateComments = ({ updatedComments }) => {
     this._state.comments = updatedComments.comments;
-    this._state.commentEmojiName = null;
+    this._state.commentEmojiName = '';
     this._state.commentText = '';
 
     this.#changePopupScrollPosition();

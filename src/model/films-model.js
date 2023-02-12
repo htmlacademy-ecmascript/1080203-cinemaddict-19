@@ -76,7 +76,7 @@ export default class FilmsModel extends Observable {
       if (response) {
         this.#films.find((modelFilm) => {
           if (modelFilm.id === film.id) {
-            modelFilm.userDetails[changedUserDetailId] = response.userDetails[changedUserDetailId];
+            modelFilm.userDetails[key] = response.userDetails[key];
           }
         });
       }
