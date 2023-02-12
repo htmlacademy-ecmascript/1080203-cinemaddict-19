@@ -1,4 +1,4 @@
-import UserTitleView from './view/user-title-view.js';
+import UserTitlePresenter from './presenter/user-title-presenter.js';
 import FilmsStatisticView from './view/films-statistic-view.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilmsModel from './model/films-model.js';
@@ -14,6 +14,7 @@ const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 const filmsApiService = new FilmsApiService(END_POINT, AUTHORIZATION);
 const filmsModel = new FilmsModel({ filmsApiService });
+const userTitlePresenter = new UserTitlePresenter({ headerElement, filmsModel });
 const commentsModel = new CommentsModel({ filmsApiService });
 const filtersModel = new FilmsFilterModel();
 const filmsPresenter = new FilmsPresenter({
@@ -24,7 +25,7 @@ const filmsPresenter = new FilmsPresenter({
 });
 const filmsFilterPresenter = new FilmsFilterPresenter({ filtersModel, filmsModel });
 
-render(new UserTitleView(), headerElement);
+userTitlePresenter.init();
 
 filmsFilterPresenter.init({ mainElement, filmsFilterPresenter });
 

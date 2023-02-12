@@ -21,6 +21,17 @@ export default class FilmsModel extends Observable {
     this.#filmsApiService = filmsApiService;
   }
 
+  films = async () => {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this.#adaptFilmToClient);
+    } catch(err) {
+      this.#films = [];
+    }
+
+    return this.#films;
+  };
+
   async init() {
     try {
       const films = await this.#filmsApiService.films;
@@ -65,7 +76,12 @@ export default class FilmsModel extends Observable {
       // Error
     }
 
-    this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, { controlButtonId: changedUserDetailId, response, filmCard });
+    this._notify(FILM_MODEL_ACTIONS.CHANGE_USER_DETAILS, {
+      controlButtonId: changedUserDetailId,
+      response,
+      filmCard,
+      films: this.#films
+    });
   }
 
   updateFilmsList = async () => {
