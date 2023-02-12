@@ -97,6 +97,12 @@ const DELETE_BUTTON_TEXT = {
   LOADER: 'Deleting...'
 };
 
+const USER_TITLE = {
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie Buff'
+};
+
 const AUTHORIZATION = 'Basic ytgr5466hy78fdsw';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
@@ -128,5 +134,6 @@ export {
   AUTHORIZATION,
   END_POINT,
   COMMENTS_MODEL_ACTIONS,
-  DELETE_BUTTON_TEXT
+  DELETE_BUTTON_TEXT,
+  USER_TITLE
 };
