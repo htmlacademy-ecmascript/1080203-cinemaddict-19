@@ -65,8 +65,6 @@ export default class FilmsPresenter {
     this.#filmsFilterModel.addObserver(this.#resetFilmsSorting);
     this.#filmsFilterModel.addObserver(this.#renderFilteredAndSortedFilmCards);
     this.#commentsModel.addObserver(this.#renderFilteredAndSortedFilmCards);
-    // this.#filmsModel.addObserver(this.#renderTopCommentedFilms);
-    // this.#filmsModel.addObserver(this.#renderTopRatedFilms);
     this.#filmsModel.addObserver(this.#renderFilmBoard);
   }
 
